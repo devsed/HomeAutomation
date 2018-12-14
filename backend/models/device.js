@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 let Schema = mongoose.Schema({
     name:String,
     //id:String,
-    type:Number
+    type:Number,
+    parentid:String
 });
 
-module.exports = mongoose.model("HAItem",Schema);
+module.exports = mongoose.model("smartHomeDevice",Schema);

@@ -1,6 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const haRouter = require("./routes/haRouter");
+const haRouter = require("./routes/smaRouter");
 const mongoose = require("mongoose");
 const userModel = require("./models/users")
 const bcrypt = require("bcrypt-nodejs")
