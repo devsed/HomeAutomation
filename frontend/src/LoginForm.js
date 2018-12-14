@@ -37,9 +37,9 @@ class LoginForm extends React.Component {
 
     render() {
         return (
-            <div class="ui one column stackable center aligned page grid">
-                <div class="column four wide">
-                    <h1 style={{ height: 65 }} >Home Automation</h1>
+            <div className="ui one column stackable center aligned page grid">
+                <div className="column six wide">
+                    <h1 style={{ height: 65 }} >Smart Home</h1>
                     <Form>
                         <Form.Field>
                             <label htmlFor="username">Username</label>

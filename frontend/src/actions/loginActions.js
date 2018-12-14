@@ -22,7 +22,7 @@ export const register = (user) => {
                 alert("Register successful!");
             } else {
                 dispatch(registerFailed("Username already in use"));
-                alert("Username already in usex");
+                alert("Username already in use");
             }
         }).catch((error) => {
             dispatch(registerFailed("Server not responding"));
@@ -46,10 +46,10 @@ export const login = (user) => {
                 response.json().then((data) => {
                     dispatch(loginSuccess());
                 }).catch((error) => {
-                    dispatch(loginFailed("Server responded with error"));
+                    dispatch(loginFailed("Wrong credentials")); //Vaihdoin Server responded with error
                 })
             } else {
-                dispatch(loginFailed("Wrong credentials"));
+                dispatch(loginFailed("Server responded with error")); //Vaihdoin Wrong credentials
             }
         }).catch((error) => {
             dispatch(loginFailed("Server responded with error"));

@@ -1,7 +1,8 @@
 import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import LoginForm from './LoginForm';
-import { connect } from 'react-redux';
+//import { connect } from 'react-redux';
+import RoomAccordionExample from './RoomAccordionExample';
 
 export default class Main extends React.Component {
 
@@ -13,6 +14,12 @@ export default class Main extends React.Component {
                         (<Redirect to="/list" />) :
                         (<LoginForm />)
                 } />
+                <Route path="/list" render={() =>
+                    this.props.isLogged ?
+                        (<RoomAccordionExample />) :
+                        (<Redirect to="/" />)
+                } />
+
             </Switch>
         )
     }
