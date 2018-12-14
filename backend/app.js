@@ -1,6 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const haRouter = require("./routes/smaRouter");
+const smaRouter = require("./routes/smaRouter");
 const mongoose = require("mongoose");
 const userModel = require("./models/users")
 const bcrypt = require("bcrypt-nodejs")
@@ -139,7 +139,7 @@ function createToken() {
 	return token;
 }
 
-app.use("/api", isUserLogged, haRouter);
+app.use("/api", isUserLogged, smaRouter);
 
 app.listen(3001);
 console.log("Running in port 3001");
