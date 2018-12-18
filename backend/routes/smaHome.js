@@ -10,6 +10,9 @@ class SmartHomeHome extends SmartHomeRoot {
         this.model = houseModel;
         this.childModel = roomModel;
     }
+    _load(item,req) {
+        item.proxySettings = req.body.proxySettings;
+    }
 }
 
 module.exports = SmartHomeHome;
