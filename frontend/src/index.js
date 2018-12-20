@@ -7,11 +7,17 @@ import * as serviceWorker from './serviceWorker';
 import { BrowserRouter } from 'react-router-dom';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import LoginReducer from './reducers/loginReducer';
+import roomReducer from './reducers/RoomReducer';
 import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
+import homeReducer from './reducers/HomeReducer';
+import deviceReducer from './reducers/DeviceReducer';
 
 let rootReducer = combineReducers({
-    login: LoginReducer
+    login: LoginReducer,
+    room: roomReducer,
+    home: homeReducer,
+    device: deviceReducer
 })
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
