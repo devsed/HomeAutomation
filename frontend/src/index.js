@@ -12,12 +12,14 @@ import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import homeReducer from './reducers/HomeReducer';
 import deviceReducer from './reducers/DeviceReducer';
+import functionReducer from './reducers/FunctionReducer';
 
 let rootReducer = combineReducers({
     login: LoginReducer,
     room: roomReducer,
     home: homeReducer,
-    device: deviceReducer
+    device: deviceReducer,
+    function: functionReducer
 })
 
 const store = createStore(rootReducer, applyMiddleware(thunk));

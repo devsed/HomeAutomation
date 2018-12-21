@@ -3,11 +3,12 @@ import { connect } from 'react-redux';
 import { getRooms } from './actions/RoomActions';
 import { getHomes } from './actions/HomeActions';
 import { getDevices } from './actions/DeviceActions';
-import { Accordion, AccordionContent, Button } from 'semantic-ui-react'
+import { getFunctions } from './actions/FunctionActions';
+import { Accordion } from 'semantic-ui-react'
 
 class RoomList extends React.Component {
 
-    state = { roomActiveIndex: -1 }
+    state = { roomActiveIndex: -1, deviceActiveIndex: -1 }
 
     componentDidMount() {
         if (this.props.isLogged) {
@@ -20,9 +21,25 @@ class RoomList extends React.Component {
     /*    remove = (event) => {
             this.props.dispatch(removeFromList(event.target.name));
         }*/
+    getFunc = (deviceProps) => event => {
+        console.log("Device " + deviceProps.activeDeviceId);
+        var active = -1;
+        var i = -1;
+        if (this.state.deviceActiveIndex > -1) {
+            this.setState({ deviceActiveIndex: -1 });
+        } else {
+            this.props.dispatch(getFunctions(deviceProps.activeDeviceId));
+            for (i = 0; i < deviceProps.deviceIdList.length; i++) {
+                if (deviceProps.activeDeviceId === deviceProps.deviceIdList[i].deviceId) {
+                    active = i;
+                }
+            }
+            this.setState({ deviceActiveIndex: active });
+        }
+    }
 
     getDev = (roomProps) => event => {
-        console.log(roomProps);
+        console.log("Room " + roomProps.activeRoomId);
         var active = -1;
         var i = -1;
         if (this.state.roomActiveIndex > -1) {
@@ -41,16 +58,33 @@ class RoomList extends React.Component {
     render() {
 
         let roomActiveIndex = this.state.roomActiveIndex;
+        let deviceActiveIndex = this.state.deviceActiveIndex;
 
-        let devicepanels =
+        let functionPanels =
             <Accordion.Accordion panels={
-                this.props.devicelist.map((device) => {
+                this.props.functionlist.map((functio) => {
                     return {
-                        key: device._id,
-                        title: device.name
+                        key: functio._id,
+                        title: functio.name
                     }
                 })
             } />
+
+        let deviceListIdx = -1;
+        let deviceIdList = [];
+        let devicePanels =
+            <Accordion.Accordion panels={
+                this.props.devicelist.map((device) => {
+                    deviceListIdx = deviceListIdx + 1;
+                    deviceIdList.push({ deviceListIdx: deviceListIdx, deviceId: device._id });
+                    return {
+                        key: device._id,
+                        title: device.name,
+                        content: { content: functionPanels },
+                        onTitleClick: this.getFunc({ activeDeviceId: device._id, deviceIdList: deviceIdList })
+                    }
+                })
+            } activeIndex={deviceActiveIndex} />
 
         let roomListIdx = -1;
         let roomIdList = [];
@@ -62,17 +96,17 @@ class RoomList extends React.Component {
                     return {
                         key: room._id,
                         title: room.name,
-                        content: { content: devicepanels },
+                        content: { content: devicePanels },
                         onTitleClick: this.getDev({ activeRoomId: room._id, roomIdList: roomIdList })
                     }
-                }) 
+                })
             } activeIndex={roomActiveIndex} />
 
         let homes = this.props.homelist.map((home) => {
             return {
                 key: home._id,
                 title: home.name,
-                content: { content: roomPanels  }
+                content: { content: roomPanels }
             }
         })
 
@@ -92,7 +126,8 @@ const mapStateToProps = (state) => {
         isLogged: state.login.isLogged,
         roomlist: state.room.roomlist,
         homelist: state.home.homelist,
-        devicelist: state.device.devicelist
+        devicelist: state.device.devicelist,
+        functionlist: state.function.functionlist
     }
 }
 
