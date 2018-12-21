@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { getRooms } from './actions/RoomActions';
 import { getHomes } from './actions/HomeActions';
 import { getDevices } from './actions/DeviceActions';
-import { Accordion, AccordionContent } from 'semantic-ui-react'
+import { Accordion, AccordionContent, Button } from 'semantic-ui-react'
 
 class RoomList extends React.Component {
 
@@ -21,15 +21,20 @@ class RoomList extends React.Component {
             this.props.dispatch(removeFromList(event.target.name));
         }*/
 
-    getDev = (roomId) => event => {
-        console.log(roomId);
+    getDev = (roomProps) => event => {
+        console.log(roomProps);
+        var active = -1;
+        var i = -1;
         if (this.state.roomActiveIndex > -1) {
             this.setState({ roomActiveIndex: -1 });
         } else {
-            this.props.dispatch(getDevices(roomId));
-            //***** Tässä on ongelmakohta, en saa listan indexiä talteen */
-            // this.setState({roomActiveIndex:this.index});
-            this.setState({ roomActiveIndex: 3 });
+            this.props.dispatch(getDevices(roomProps.activeRoomId));
+            for (i = 0; i < roomProps.roomIdList.length; i++) {
+                if (roomProps.activeRoomId === roomProps.roomIdList[i].roomId) {
+                    active = i;
+                }
+            }
+            this.setState({ roomActiveIndex: active });
         }
     }
 
@@ -47,23 +52,27 @@ class RoomList extends React.Component {
                 })
             } />
 
-        let roompanels =
+        let roomListIdx = -1;
+        let roomIdList = [];
+        let roomPanels =
             <Accordion.Accordion panels={
                 this.props.roomlist.map((room) => {
+                    roomListIdx = roomListIdx + 1;
+                    roomIdList.push({ roomListIdx: roomListIdx, roomId: room._id });
                     return {
                         key: room._id,
                         title: room.name,
                         content: { content: devicepanels },
-                        onTitleClick: this.getDev(room._id)
+                        onTitleClick: this.getDev({ activeRoomId: room._id, roomIdList: roomIdList })
                     }
-                })
+                }) 
             } activeIndex={roomActiveIndex} />
 
         let homes = this.props.homelist.map((home) => {
             return {
                 key: home._id,
                 title: home.name,
-                content: { content: roompanels }
+                content: { content: roomPanels  }
             }
         })
 
@@ -79,6 +88,7 @@ class RoomList extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
+        user: state.login.username,
         isLogged: state.login.isLogged,
         roomlist: state.room.roomlist,
         homelist: state.home.homelist,
