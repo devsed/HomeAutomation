@@ -23,34 +23,39 @@ class RoomList extends React.Component {
         }*/
     getFunc = (deviceProps) => event => {
         console.log("Device " + deviceProps.activeDeviceId);
+        var old_activeIndex = this.state.deviceActiveIndex;
         var active = -1;
         var i = -1;
         if (this.state.deviceActiveIndex > -1) {
             this.setState({ deviceActiveIndex: -1 });
-        } else {
-            this.props.dispatch(getFunctions(deviceProps.activeDeviceId));
-            for (i = 0; i < deviceProps.deviceIdList.length; i++) {
-                if (deviceProps.activeDeviceId === deviceProps.deviceIdList[i].deviceId) {
-                    active = i;
-                }
+        }
+        this.props.dispatch(getFunctions(deviceProps.activeDeviceId));
+        for (i = 0; i < deviceProps.deviceIdList.length; i++) {
+            if (deviceProps.activeDeviceId === deviceProps.deviceIdList[i].deviceId) {
+                active = i;
             }
+        }
+        if (old_activeIndex !== active) {
             this.setState({ deviceActiveIndex: active });
         }
     }
 
     getDev = (roomProps) => event => {
         console.log("Room " + roomProps.activeRoomId);
+        var old_activeIndex = this.state.roomActiveIndex;
         var active = -1;
         var i = -1;
         if (this.state.roomActiveIndex > -1) {
             this.setState({ roomActiveIndex: -1 });
-        } else {
-            this.props.dispatch(getDevices(roomProps.activeRoomId));
-            for (i = 0; i < roomProps.roomIdList.length; i++) {
-                if (roomProps.activeRoomId === roomProps.roomIdList[i].roomId) {
-                    active = i;
-                }
+        }
+        this.props.dispatch(getDevices(roomProps.activeRoomId));
+        for (i = 0; i < roomProps.roomIdList.length; i++) {
+            if (roomProps.activeRoomId === roomProps.roomIdList[i].roomId) {
+                active = i;
             }
+        }
+        if (old_activeIndex !== active) {
+            this.setState({ deviceActiveIndex:-1});
             this.setState({ roomActiveIndex: active });
         }
     }
