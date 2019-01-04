@@ -44,7 +44,7 @@ export const login = (user) => {
         fetch("/login", loginObject).then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
-                    dispatch(loginSuccess());
+					dispatch(loginSuccess(data.currentUserId));
                 }).catch((error) => {
                     dispatch(loginFailed("Wrong credentials")); //Vaihdoin Server responded with error
                 })
@@ -57,7 +57,7 @@ export const login = (user) => {
     }
 }
 
-export const logout = (user) => {
+export const logout = () => {
     return dispatch => {
         let logoutObject = {
             method: "POST",
@@ -77,6 +77,7 @@ export const logout = (user) => {
         })
     }
 }
+
 // Action creators
 
 const registerSuccess = () => {
@@ -92,9 +93,10 @@ const registerFailed = (error) => {
     }
 }
 
-const loginSuccess = () => {
+const loginSuccess = (currentUserId) => {
     return {
-        type: LOGIN_SUCCESS
+		type: LOGIN_SUCCESS,
+		currentUserId: currentUserId
     }
 }
 

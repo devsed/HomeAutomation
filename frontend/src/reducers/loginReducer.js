@@ -2,13 +2,15 @@ import {
     REGISTER_SUCCESS,
     REGISTER_FAILED,
     LOGIN_SUCCESS,
-    LOGIN_FAILED,
+	LOGIN_FAILED,
     LOGOUT_SUCCESS,
     LOGOUT_FAILED,
     LOGIN_LOADING
 } from '../actions/loginActions';
 
 function getInitialState() {
+	let temoCurrentUserId = "";
+
     if (sessionStorage.getItem("isLogged")) {
         let tempIsLogged = false
         if (sessionStorage.getItem("isLogged") === "true") {
@@ -19,13 +21,15 @@ function getInitialState() {
             error = sessionStorage.getItem("login_error");
         }
         return {
-            isLogged: tempIsLogged,
+			isLogged: tempIsLogged,
+			currentUserId: temoCurrentUserId,
             loading: false,
             error: error
         }
     } else {
         return {
-            isLogged: false,
+			isLogged: false,
+			currentUserId: temoCurrentUserId,
             loading: false,
             error: ""
         }
@@ -41,14 +45,16 @@ let initialState = getInitialState();
 
 const loginReducer = (state = initialState, action) => {
     console.log("loginReducer, action:" + action.type)
-    let tempState = {};
+	let tempState = {};
+	
     switch (action.type) {
         case LOGIN_LOADING:
             tempState = {
                 ...state,
                 loading: true
             }
-            return tempState;
+			return tempState;
+			
         case REGISTER_SUCCESS:
             tempState = {
                 ...state,
@@ -56,7 +62,8 @@ const loginReducer = (state = initialState, action) => {
                 loading: false
             }
             saveToStorage(state.isLogged, "");
-            return tempState;
+			return tempState;
+			
         case REGISTER_FAILED:
             tempState = {
                 ...state,
@@ -64,15 +71,18 @@ const loginReducer = (state = initialState, action) => {
                 loading: false
             }
             saveToStorage(state.isLogged, action.error);
-            return tempState;
+			return tempState;
+			
         case LOGIN_SUCCESS:
             tempState = {
-                isLogged: true,
+				isLogged: true,
+				currentUserId: action.currentUserId,
                 error: "",
                 loading: false
             }
             saveToStorage("true", "");
-            return tempState;
+			return tempState;
+			
         case LOGIN_FAILED:
             tempState = {
                 ...state,
@@ -80,7 +90,8 @@ const loginReducer = (state = initialState, action) => {
                 loading: false
             }
             saveToStorage(state.isLogged, action.error);
-            return tempState;
+			return tempState;
+			
         case LOGOUT_SUCCESS:
             tempState = {
                 isLogged: false,
@@ -88,7 +99,8 @@ const loginReducer = (state = initialState, action) => {
                 error: ""
             }
             sessionStorage.clear();
-            return tempState;
+			return tempState;
+			
         case LOGOUT_FAILED:
             tempState = {
                 ...state,
@@ -96,7 +108,8 @@ const loginReducer = (state = initialState, action) => {
                 error: action.error
             }
             saveToStorage(state.isLogged, action.error);
-            return tempState;
+			return tempState;
+			
         default:
             return state
     }
