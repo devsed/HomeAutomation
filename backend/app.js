@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const smaRouter = require("./routes/smaRouter");
 const mongoose = require("mongoose");
-const userModel = require("./models/users")
+const userModel = require("./models/user")
 const bcrypt = require("bcrypt-nodejs")
 const passport = require("passport")
 const localStrategy = require("passport-local").Strategy;
@@ -62,7 +62,7 @@ passport.use("local-login", new localStrategy({
 	if(!req.body.username || !req.body.password) {
 		return done(null,false,"Wrong credentials");
 	}
-	if(req.body.username.length === 0 || req.body.password.length ===0 ) {
+	if(req.body.username.length === 0 || req.body.password.length === 0 ) {
 		return done(null,false,"Wrong credentials");
 	}
 	userModel.findOne({"username":username}, function(err,user) {
@@ -75,7 +75,8 @@ passport.use("local-login", new localStrategy({
 		if(isPasswordValid(password,user.password)) {
 			let token = createToken();
 			req.session.token = token;
-			req.session.username= username;
+			req.session.username = username;
+			req.session.userId = user._id;
 			return done(null,user)
 		}
 		return done(null,false,"Wrong credentials");
@@ -90,9 +91,11 @@ function isPasswordValid(pw,hash) {
 	return bcrypt.compareSync(pw,hash);
 }
 
-app.post("/login",
-passport.authenticate("local-login",{failureRedirect:"/"}),function(req,res) {
-	return res.status(200).json({"token":req.session.token})
+app.post("/login", passport.authenticate("local-login",{failureRedirect:"/"}),
+	function(req,res) {
+		console.log("currentUserId:"+ req.session.userId);
+		return res.status(200).json({"token":req.session.token,
+			"currentUserId":req.session.userId});
 });
 
 app.post("/logout", function(req,res) {
@@ -111,7 +114,8 @@ app.post("/register", function(req,res) {
 	}
 	let user = new userModel({
 		"username":req.body.username,
-		"password":createSaltedPassword(req.body.password)
+		"password":createSaltedPassword(req.body.password),
+		"homeId":""
 	})
 	user.save(function(err) {
 		if(err) {

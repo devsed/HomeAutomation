@@ -1,11 +1,12 @@
 const express = require("express");
-//const mongoose = require("mongoose");
 
+const SmartHomeUser = require('./smaUser');
 const SmartHomeHome = require('./smaHome');
 const SmartHomeRoom = require('./smaRoom');
 const SmartHomeDevice = require('./smaDevice');
 const SmartHomeFunction = require('./smaFunction');
 
+var smaUser = new SmartHomeUser();
 var smaHome = new SmartHomeHome();
 var smaRoom = new SmartHomeRoom();
 var smaDevice = new SmartHomeDevice();
@@ -18,11 +19,11 @@ router.get("/homes", smaHome.Items.bind(smaHome))
 // Save a Home
 router.post("/homes", smaHome.Save.bind(smaHome));
 // Get one Home
-router.get("/home/:id", smaHome.GetOne.bind(smaHome));
+router.get("/homes/:id", smaHome.GetOne.bind(smaHome));
 // Replace (update) a Home
-router.put("/home/", smaHome.ReplaceOne.bind(smaHome));
+router.put("/home", smaHome.ReplaceOne.bind(smaHome));
 // Delete a Home
-router.delete("/home/:id", smaHome.Delete.bind(smaHome));
+router.delete("/homes/:id", smaHome.Delete.bind(smaHome));
 
 // Get children of a Home, i.e. Rooms in that Home
 router.get("/rooms/:id", smaHome.GetChildren.bind(smaHome));
@@ -46,9 +47,9 @@ router.delete("/devices/:id", smaRoom.DeleteChildren.bind(smaRoom));
 // Save a Device
 router.post("/devices", smaDevice.Save.bind(smaDevice));
 // Get one Device
-router.get("/device/:id", smaDevice.GetOne.bind(smaDevice));
+router.get("/devices/:id", smaDevice.GetOne.bind(smaDevice));
 // Replace a Device
-router.put("/device/", smaDevice.ReplaceOne.bind(smaDevice));
+router.put("/device", smaDevice.ReplaceOne.bind(smaDevice));
 
 // Get children of a Device, i.e. Functions of that Device
 router.get("/functions/:id", smaDevice.GetChildren.bind(smaDevice));
@@ -60,6 +61,11 @@ router.post("/functions", smaFunction.Save.bind(smaFunction));
 // Get one Function
 router.get("/functions/:id", smaFunction.GetOne.bind(smaFunction));
 // Replace a Function
-router.put("/functions/", smaFunction.ReplaceOne.bind(smaFunction));
+router.put("/function", smaFunction.ReplaceOne.bind(smaFunction));
+
+// Get one User
+router.get("/users/:id", smaUser.GetOne.bind(smaUser));
+// Update (replace) an User
+router.put("/user", smaUser.ReplaceOne.bind(smaUser));
 
 module.exports = router;
