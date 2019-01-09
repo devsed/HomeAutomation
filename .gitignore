@@ -1,2 +1,4 @@
 
 smarthome.code-workspace
+backend/.vscode/launch.json
+backend/backend.code-workspace
