@@ -77,6 +77,7 @@ passport.use("local-login", new localStrategy({
 			req.session.token = token;
 			req.session.username = username;
 			req.session.userId = user._id;
+			req.session.homeId = user.homeId;
 			return done(null,user)
 		}
 		return done(null,false,"Wrong credentials");
@@ -95,7 +96,7 @@ app.post("/login", passport.authenticate("local-login",{failureRedirect:"/"}),
 	function(req,res) {
 		console.log("currentUserId:"+ req.session.userId);
 		return res.status(200).json({"token":req.session.token,
-			"currentUserId":req.session.userId});
+			"userId":req.session.userId});
 });
 
 app.post("/logout", function(req,res) {

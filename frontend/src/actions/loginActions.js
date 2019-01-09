@@ -1,3 +1,5 @@
+import { getHome } from './HomeActions';
+
 export const REGISTER_SUCCESS = "REGISTER_SUCCESS";
 export const REGISTER_FAILED = "REGISTER_FAILED";
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
@@ -44,7 +46,10 @@ export const login = (user) => {
         fetch("/login", loginObject).then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
-					dispatch(loginSuccess(data.currentUserId));
+					if (data.homeId.length > 0) {
+							dispatch(getHome(data.homeId));
+					}
+					dispatch(loginSuccess(data.homeId));
                 }).catch((error) => {
                     dispatch(loginFailed("Wrong credentials")); //Vaihdoin Server responded with error
                 })
@@ -93,10 +98,10 @@ const registerFailed = (error) => {
     }
 }
 
-const loginSuccess = (currentUserId) => {
+const loginSuccess = (homeId) => {
     return {
 		type: LOGIN_SUCCESS,
-		currentUserId: currentUserId
+		homeId: homeId
     }
 }
 

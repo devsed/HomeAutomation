@@ -9,7 +9,7 @@ import {
 } from '../actions/loginActions';
 
 function getInitialState() {
-	let temoCurrentUserId = "";
+	let tempHomedId = "";
 
     if (sessionStorage.getItem("isLogged")) {
         let tempIsLogged = false
@@ -22,14 +22,14 @@ function getInitialState() {
         }
         return {
 			isLogged: tempIsLogged,
-			currentUserId: temoCurrentUserId,
+			homeId: tempHomedId,
             loading: false,
             error: error
         }
     } else {
         return {
 			isLogged: false,
-			currentUserId: temoCurrentUserId,
+			homeId: tempHomedId,
             loading: false,
             error: ""
         }
@@ -44,7 +44,7 @@ function saveToStorage(isLogged, error) {
 let initialState = getInitialState();
 
 const loginReducer = (state = initialState, action) => {
-    console.log("loginReducer, action:" + action.type)
+    //console.log("loginReducer, action:" + action.type)
 	let tempState = {};
 	
     switch (action.type) {
@@ -76,7 +76,7 @@ const loginReducer = (state = initialState, action) => {
         case LOGIN_SUCCESS:
             tempState = {
 				isLogged: true,
-				currentUserId: action.currentUserId,
+				homeId: action.homeId,
                 error: "",
                 loading: false
             }

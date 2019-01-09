@@ -25,7 +25,7 @@ function saveToStorage(list, error) {
 let initialState = getInitialState();
 
 const deviceReducer = (state = initialState, action) => {
-    console.log("DeviceReducer - action:" + action.type)
+    //console.log("DeviceReducer - action:" + action.type)
     let tempState = {};
     switch (action.type) {
         case GET_DEVICES_SUCCESS:
