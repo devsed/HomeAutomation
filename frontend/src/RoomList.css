@@ -1,0 +1,30 @@
+.ui.styled.accordion .accordion .accordion .accordion{
+    background: rgba(200,200,200,0.2);
+    
+}
+
+.ui.styled.accordion .accordion .accordion {
+     background: #ffffff;
+     
+}
+
+.ui.styled.accordion .accordion  {
+    background: #ffffff;
+}
+
+.ui.styled.accordion  {
+    background: #ffffff;
+}
+
+.ui.styled.accordion .title:hover,
+.ui.styled.accordion .accordion .title:hover,
+.ui.styled.accordion .accordion .accordion .title.hover
+ {
+    color: rgba(255, 0, 0, 0.8);
+ }
+  .ui.styled.accordion .title.active,
+  .ui.styled.accordion .accordion .title.active,
+    .ui.styled.accordion .accordion .accordion .title.active
+ {
+     color: rgba(255, 0, 0, 0.8);
+ }
