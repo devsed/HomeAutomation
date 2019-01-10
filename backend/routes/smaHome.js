@@ -14,15 +14,14 @@ class SmartHomeHome extends SmartHomeRoot {
 	deleteHome(homeId) {
 		houseModel.deleteOne({"_id": homeId});
 	}
-
+	_load(item,req) {
+        item.proxySettings = req.body.proxySettings;
+    }
     Save(req,res,next) {
         let home = new this.model({
             name: req.body.name,
 			type: req.body.type,
-			proxySettings: {
-				"username": req.body.serviceUsername,
-				"password": req.body.servicePassword
-			}
+			proxySettings: req.body.proxySettings
 		});
 		
 		home.save(function(err) {
