@@ -19,6 +19,7 @@ export class HomeAccordion extends React.Component {
 						<Table.Row>
 							<Table.HeaderCell>Name</Table.HeaderCell>
 							<Table.HeaderCell>Type</Table.HeaderCell>
+							<Table.HeaderCell>Service address</Table.HeaderCell>
 							<Table.HeaderCell>Service username</Table.HeaderCell>
 							<Table.HeaderCell>Service password</Table.HeaderCell>
 						</Table.Row>
@@ -27,6 +28,7 @@ export class HomeAccordion extends React.Component {
 						<Table.Row key={item._id}>
 							<Table.Cell>{item.name}</Table.Cell>
 							<Table.Cell>{item.type}</Table.Cell>
+							<Table.Cell>{item.proxySettings.address}</Table.Cell>
 							<Table.Cell>{item.proxySettings.username}</Table.Cell>
 							<Table.Cell>{item.proxySettings.password}</Table.Cell>
 						</Table.Row>
@@ -40,7 +42,6 @@ export class HomeAccordion extends React.Component {
 const mapStateToProps = (state) => {
 	return {
 		home: state.home.home
-		// homeId: state.login.homeId
 	}
 }
 

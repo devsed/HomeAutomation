@@ -26,7 +26,7 @@ function saveToStorage(error) {
 let initialState = getInitialState();
 
 const userReducer = (state = initialState, action) => {
-    //console.log("userReducer, action:" + action.type)
+    console.log("userReducer, action:" + action.type)
 	let tempState = {};
 	
     switch (action.type) {

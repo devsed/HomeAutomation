@@ -9,35 +9,41 @@ import {
 } from '../actions/loginActions';
 
 function getInitialState() {
-	let tempHomedId = "";
-
     if (sessionStorage.getItem("isLogged")) {
         let tempIsLogged = false
         if (sessionStorage.getItem("isLogged") === "true") {
             tempIsLogged = true
-        }
+		}
+		
+		let tempHomeExists = false;
+        if (sessionStorage.getItem("homeExists") === "true") {
+            tempHomeExists = true
+		}
+
         let error = "";
         if (sessionStorage.getItem("login_error")) {
             error = sessionStorage.getItem("login_error");
-        }
+		}
+		
         return {
 			isLogged: tempIsLogged,
-			homeId: tempHomedId,
+			homeExists: tempHomeExists,
             loading: false,
             error: error
         }
     } else {
         return {
 			isLogged: false,
-			homeId: tempHomedId,
+			homeExists: false,
             loading: false,
             error: ""
         }
     }
 }
 
-function saveToStorage(isLogged, error) {
-    sessionStorage.setItem("isLogged", isLogged);
+function saveToStorage(isLogged, homeExists, error) {
+	sessionStorage.setItem("isLogged", isLogged);
+	sessionStorage.setItem("homeExists", homeExists);
     sessionStorage.setItem("error", "");
 }
 
@@ -61,7 +67,7 @@ const loginReducer = (state = initialState, action) => {
                 error: "",
                 loading: false
             }
-            saveToStorage(state.isLogged, "");
+            saveToStorage(state.isLogged, state.homeExists, "");
 			return tempState;
 			
         case REGISTER_FAILED:
@@ -76,11 +82,11 @@ const loginReducer = (state = initialState, action) => {
         case LOGIN_SUCCESS:
             tempState = {
 				isLogged: true,
-				homeId: action.homeId,
+				homeExists: action.homeExists,
                 error: "",
                 loading: false
             }
-            saveToStorage("true", "");
+            saveToStorage("true", action.homeExists, "");
 			return tempState;
 			
         case LOGIN_FAILED:
@@ -89,7 +95,7 @@ const loginReducer = (state = initialState, action) => {
                 error: action.error,
                 loading: false
             }
-            saveToStorage(state.isLogged, action.error);
+            saveToStorage(state.isLogged, state.homeExists, action.error);
 			return tempState;
 			
         case LOGOUT_SUCCESS:
@@ -107,7 +113,7 @@ const loginReducer = (state = initialState, action) => {
                 loading: false,
                 error: action.error
             }
-            saveToStorage(state.isLogged, action.error);
+            saveToStorage(state.isLogged, state.homeExists, action.error);
 			return tempState;
 			
         default:

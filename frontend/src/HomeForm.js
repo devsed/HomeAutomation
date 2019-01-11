@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import { createHome } from './actions/HomeActions';
 
 const homeOptions = [
-	{text: 'Row house', value: 0},
-	{text: 'Apartment house', value: 1},
-	{text: 'Detached house', value: 2}
+	{text: 'Row house', value: 1},
+	{text: 'Apartment house', value: 2},
+	{text: 'Detached house', value: 3}
 ];
 
 class HomeForm extends React.Component {
@@ -14,8 +14,9 @@ class HomeForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-			type: -1,
-            name: "",
+			name: "",
+			type: 0,
+			serviceAddress:"",
 			serviceUsername: "",
 			servicePassword: ""
 		}
@@ -32,16 +33,20 @@ class HomeForm extends React.Component {
     submit = (event) => {
 		event.preventDefault();
 
-		if (this.state.type === -1 || this.state.name.length === 0 ||
+		
+		 if (this.state.name.length === 0 || this.state.type < 1 || this.state.serviceAddress.length === 0 ||
 			this.state.serviceUsername.length === 0 || this.state.servicePassword.length === 0) {
             return;
-        }
-		
+		}
+				
         let home = {
 			"name":this.state.name,
 			"type":this.state.type,
-			"serviceUsername":this.state.serviceUsername,
-			"servicePassword":this.state.servicePassword
+			"proxySettings": {
+				"address":this.state.serviceAddress,
+				"username":this.state.serviceUsername,
+				"password":this.state.servicePassword
+			}
 		}
 		
 		this.props.dispatch(createHome(home));
@@ -53,23 +58,29 @@ class HomeForm extends React.Component {
                 <div className="column six wide">
 					<h2 style={{ height: 65 }} >Create Home</h2>
 					<Form>
-						<Form.Field>
+						<Form.Field required>
 							<label htmlFor="name">Home name</label>
-							<input type="text" name="name" onChange={this.onChange}	value={this.state.name}/>
+							<input type="text" name="name" value={this.state.name} onChange={this.onChange} required />
 						</Form.Field>
 						<Form.Field	name="type"	control={Select} options={homeOptions}
 							label={{children: "Type of your house", htmlFor: "type"}}
-							placeholder="Select your house type" onChange={this.onChange}/>
-						<Form.Field>
-						<label htmlFor="serviceUsername">Username</label>
-                            <input type="text" name="serviceUsername" onChange={this.onChange} value={this.state.serviceUsername} />
+							placeholder="Select your house type" onChange={this.onChange} required />
+						<Form.Field required>
+							<label htmlFor="serviceAddress">Service address</label>
+							<input type="url" name="serviceAddress" value={this.state.serviceAddress}
+								onChange={this.onChange} placeholder={"E.g. https://uncleshab.hopto.org"} required />
                         </Form.Field>
-                        <Form.Field>
-                            <label htmlFor="servicePassword">Password</label>
-                            <input type="password" name="servicePassword" onChange={this.onChange} value={this.state.servicePassword} />
+						<Form.Field required>
+							<label htmlFor="serviceUsername">Service username</label>
+							<input type="text" name="serviceUsername" value={this.state.serviceUsername}
+								onChange={this.onChange} placeholder="Username for smart home service" required />
                         </Form.Field>
-                        	<Button onClick={this.submit} name="create">Create Home</Button> &nbsp;&nbsp;
-                        	<Button onClick={this.submit} name="cancel">Cancel</Button>
+                        <Form.Field required>
+                            <label htmlFor="servicePassword">Service password</label>
+							<input type="password" name="servicePassword" value={this.state.servicePassword}
+								onChange={this.onChange} placeholder="Password for smart home service" required />
+                        </Form.Field>
+                        	<Button onClick={this.submit} name="create">Create Home</Button>
 					</Form>
 				</div>
 			</div>

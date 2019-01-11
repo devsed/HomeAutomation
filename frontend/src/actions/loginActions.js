@@ -46,10 +46,12 @@ export const login = (user) => {
         fetch("/login", loginObject).then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
-					if (data.homeId.length > 0) {
-							dispatch(getHome(data.homeId));
+					let homeExists = false;
+					if (data.userHomeId.length > 0) {
+						homeExists = true;
+						dispatch(getHome(data.userHomeId));
 					}
-					dispatch(loginSuccess(data.homeId));
+					dispatch(loginSuccess(homeExists));
                 }).catch((error) => {
                     dispatch(loginFailed("Wrong credentials")); //Vaihdoin Server responded with error
                 })
@@ -98,10 +100,10 @@ const registerFailed = (error) => {
     }
 }
 
-const loginSuccess = (homeId) => {
+const loginSuccess = (homeExists) => {
     return {
 		type: LOGIN_SUCCESS,
-		homeId: homeId
+		homeExists: homeExists
     }
 }
 

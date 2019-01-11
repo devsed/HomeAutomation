@@ -4,10 +4,6 @@ export const CREATE_HOME_FAILED = "CREATE_HOME_FAILED";
 export const GET_HOME_SUCCESS = "GET_HOME_SUCCESS";
 export const GET_HOME_FAILED = "GET_HOME_FAILED";
 
-export const GET_HOMES_SUCCESS = "GET_HOMES_SUCCESS";
-export const GET_HOMES_FAILED = "GET_HOMES_FAILED";
-export const HOMES_LOADING = "HOMES_LOADING";
-
 // Home actions
 
 export const createHome = (home) => {
@@ -24,8 +20,8 @@ export const createHome = (home) => {
 
 		fetch("/api/homes", postObject).then((resp) => {
 			if (resp.ok) {
-				resp.json().then(() => {
-					dispatch(createHomeSuccess());
+				resp.json().then((data) => {
+					dispatch(createHomeSuccess(data));
 				}).catch((error) => {
 					dispatch(createHomeFailed("Problem creating home"));
 				})
@@ -66,33 +62,6 @@ export const getHome = (id) => {
 	}
 }
 
-export const getHomes = () => {
-	return dispatch => {
-		let getObject = {
-			method: "GET",
-			mode: "cors",
-			credentials: "include",
-			headers: {
-				"Content-Type": "application/json"
-			}
-		}
-		dispatch(homesLoading());
-		fetch("/api/homes", getObject).then((response) => {
-			if (response.ok) {
-				response.json().then((data) => {
-					dispatch(getHomesSuccess(data));
-				}).catch((error) => {
-					dispatch(getHomesFailed("Problem loading homelist"));
-				})
-			} else {
-				dispatch(getHomesFailed("Response not ok. Status:" + response.status));
-			}
-		}).catch((error) => {
-			dispatch(getHomesFailed("Problem loading homelist"));
-		});
-	}
-}
-
 	// Action creators
 
 const homeLoading = () => {
@@ -101,9 +70,10 @@ const homeLoading = () => {
 	}
 }
 
-const createHomeSuccess = () => {
+const createHomeSuccess = (home) => {
 	return {
-		type:CREATE_HOME_SUCCESS
+		type:CREATE_HOME_SUCCESS,
+		home:home
 	}
 }
 
@@ -125,25 +95,5 @@ const getHomeFailed = (error) => {
 	return {
 		type:GET_HOME_FAILED,
 		error:error
-	}
-}
-
-const getHomesSuccess = (list) => {
-	return {
-		type: GET_HOMES_SUCCESS,
-		list:list
-	}
-}
-
-const getHomesFailed = (error) => {
-	return {
-		type: GET_HOMES_FAILED,
-		error: error
-	}
-}
-
-const homesLoading = () => {
-	return {
-		type: HOMES_LOADING
 	}
 }

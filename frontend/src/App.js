@@ -11,7 +11,9 @@ class App extends Component {
 			<div className="App">
 				<NavBar />
 				<br />
-				<Main isLogged={this.props.isLogged} home={this.props.home} />
+				<Main isLogged={this.props.isLogged}
+					homeExists={this.props.homeExists}
+					wasHomeCreated={this.props.wasHomeCreated} />
 			</div>
 		);
 	}
@@ -20,7 +22,8 @@ class App extends Component {
 const mapStateToProps = (state) => {
 	return {
 		isLogged: state.login.isLogged,
-		home: state.home.home
+		homeExists: state.login.homeExists,
+		wasHomeCreated: state.home.wasHomeCreated
 	}
 }
 
