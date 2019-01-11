@@ -25,7 +25,7 @@ function saveToStorage(list, error) {
 let initialState = getInitialState();
 
 const functionReducer = (state = initialState, action) => {
-    console.log("FunctionReducer - action:" + action.type)
+    // console.log("FunctionReducer - action:" + action.type)
     let tempState = {};
     switch (action.type) {
         case GET_FUNCTIONS_SUCCESS:

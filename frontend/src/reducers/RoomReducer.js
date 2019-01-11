@@ -25,7 +25,7 @@ function saveToStorage(list, error) {
 let initialState = getInitialState();
 
 const roomReducer = (state = initialState, action) => {
-    console.log("RoomReducer - action:" + action.type)
+    //console.log("RoomReducer - action:" + action.type)
     let tempState = {};
     switch (action.type) {
         case GET_ROOMS_SUCCESS:

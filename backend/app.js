@@ -14,7 +14,6 @@ let app = express();
 app.use(bodyParser.json());
 
 // user databases
-// 
 mongoose.connect("mongodb://localhost/smarthome").then(
     () => {console.log("Connection to mongoDB successful")},
     (error) => {console.log("Connection to mongoDB failed : "+error)}
@@ -77,6 +76,7 @@ passport.use("local-login", new localStrategy({
 			req.session.token = token;
 			req.session.username = username;
 			req.session.userId = user._id;
+			req.session.homeId = user.homeId;
 			return done(null,user)
 		}
 		return done(null,false,"Wrong credentials");
@@ -95,7 +95,7 @@ app.post("/login", passport.authenticate("local-login",{failureRedirect:"/"}),
 	function(req,res) {
 		console.log("currentUserId:"+ req.session.userId);
 		return res.status(200).json({"token":req.session.token,
-			"currentUserId":req.session.userId});
+			"userId":req.session.userId, "userHomeId":req.session.homeId});
 });
 
 app.post("/logout", function(req,res) {
@@ -109,7 +109,7 @@ app.post("/register", function(req,res) {
 	if(!req.body.username || !req.body.password) {
 		return res.status(409).json({"message":"provide credentials"})
 	}
-	if(req.body.username.length ===0 || req.body.password.length ===0) {
+	if(req.body.username.length === 0 || req.body.password.length === 0) {
 		return res.status(409).json({"message":"provide credentials"})		
 	}
 	let user = new userModel({
@@ -145,5 +145,8 @@ function createToken() {
 
 app.use("/api", isUserLogged, smaRouter);
 
-app.listen(3001);
-console.log("Running in port 3001");
+// app.use(express.static(__dirname+"/static"));
+const port = process.env.PORT || 3001;
+
+app.listen(port);
+console.log("Running in port: " + port);

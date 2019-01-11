@@ -31,7 +31,7 @@ class LoginForm extends React.Component {
         if (event.target.name === "register") {
             this.props.dispatch(register(user));
         } else {
-            this.props.dispatch(login(user));
+			this.props.dispatch(login(user));
         }
     }
 
