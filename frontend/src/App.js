@@ -13,7 +13,8 @@ class App extends Component {
 				<br />
 				<Main isLogged={this.props.isLogged}
 					homeExists={this.props.homeExists}
-					wasHomeCreated={this.props.wasHomeCreated} />
+					wasHomeCreated={this.props.wasHomeCreated}
+					home={this.props.home} />
 			</div>
 		);
 	}
@@ -23,7 +24,8 @@ const mapStateToProps = (state) => {
 	return {
 		isLogged: state.login.isLogged,
 		homeExists: state.login.homeExists,
-		wasHomeCreated: state.home.wasHomeCreated
+		wasHomeCreated: state.home.wasHomeCreated,
+		home: state.home.home
 	}
 }
 

@@ -8,6 +8,9 @@ import {
 
 function getInitialState() {
 	let tempHome = null;
+	if (sessionStorage.getItem("homeData")) {
+		tempHome = sessionStorage.getItem("homeData");
+	}
 
 	let tempWasHomeCreated = false;
 	if (sessionStorage.getItem("wasHomeCreated") === "true") {
@@ -27,9 +30,10 @@ function getInitialState() {
 	}
 }
 
-function saveToStorage(wasHomeCreated, error) {
+function saveToStorage(wasHomeCreated, error, home) {
 	sessionStorage.setItem("wasHomeCreated", wasHomeCreated);
 	sessionStorage.setItem("home_error", error);
+	sessionStorage.setItem("homeData", home);
 }
 
 let initialState = getInitialState();
@@ -73,7 +77,7 @@ const homeReducer = (state = initialState, action) => {
                 error: "",
 				loading: false
 			}
-			saveToStorage(state.wasHomeCreated, "");
+			saveToStorage(state.wasHomeCreated, "", action.home);
 			return tempState;
 
 		case GET_HOME_FAILED:
