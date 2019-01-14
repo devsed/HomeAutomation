@@ -112,17 +112,28 @@ app.post("/register", function(req,res) {
 	if(req.body.username.length === 0 || req.body.password.length === 0) {
 		return res.status(409).json({"message":"provide credentials"})		
 	}
-	let user = new userModel({
-		"username":req.body.username,
-		"password":createSaltedPassword(req.body.password),
-		"homeId":""
-	})
-	user.save(function(err) {
-		if(err) {
-			return res.status(409).json({"message":"username already in use"})
+
+	// If user having home already exists, join new user to this home
+	userModel.findOne({homeId: {$exists: true}, $expr: "this.homeId.length > 0"},
+		function(err, user) {
+			if (err) {
+				return res.status(404).json({"message":"registration failed"});
+			}
+			let homeId = user ? user.homeId : "";
+
+			let newUser = new userModel({
+				"username": req.body.username,
+				"password": createSaltedPassword(req.body.password),
+				"homeId": homeId
+			});
+			newUser.save(function(err) {
+				if(err) {
+					return res.status(409).json({"message":"username already in use"})
+				}
+				return res.status(200).json({"message":"success"})
+			})
 		}
-		return res.status(200).json({"message":"success"})
-	})
+	);
 });
 
 function isUserLogged(req,res,next) {
