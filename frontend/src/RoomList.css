@@ -5,15 +5,19 @@
 
 .ui.styled.accordion .accordion .accordion {
      background: #ffffff;
-     
+     border-radius: 1.0rem;
+
 }
 
 .ui.styled.accordion .accordion  {
     background: #ffffff;
+    border-color: red;
+    border-radius: 1.0rem;
 }
 
 .ui.styled.accordion  {
-    background: #ffffff;
+    background: #cccccc;
+    border-radius: 1.0rem;
 }
 
 .ui.styled.accordion .title:hover,

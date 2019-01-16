@@ -9,6 +9,7 @@ class NavBar extends React.Component {
     logout = () => {
         this.props.dispatch(logout());
     }
+
     render() {
         let navbar;
         if (this.props.isLogged) {
@@ -16,6 +17,9 @@ class NavBar extends React.Component {
                 <List.Item>
                     <Link name="logout"
                         to="/" onClick={this.logout}>Logout</Link>
+                        <br/>
+                    <Link name="goHome"
+                        to="/">Home</Link>
                 </List.Item>
             </List>
         } else {
