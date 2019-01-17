@@ -92,7 +92,7 @@ class RoomList extends React.Component {
 
     render() {
 
-        console.log("ManageRooms :"+this.state.manageRooms);
+        console.log("ManageRooms :" + this.state.manageRooms);
         if (this.state.manageRooms) {
             return <Redirect to='/managerooms' />
         }

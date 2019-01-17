@@ -38,6 +38,8 @@ router.post("/rooms", smaRoom.Save.bind(smaRoom));
 router.get("/room/:id", smaRoom.GetOne.bind(smaRoom));
 // Replace (update) a Room
 router.put("/room/", smaRoom.ReplaceOne.bind(smaRoom));
+// Delete a Room
+router.delete("/room/:id", smaRoom.Delete.bind(smaRoom));
 
 // Get children of a Room, i.e. Devices in that Room
 router.get("/devices/:id", smaRoom.GetChildren.bind(smaRoom));

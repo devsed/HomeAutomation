@@ -1,7 +1,11 @@
 import {
     GET_ROOMS_SUCCESS,
     GET_ROOMS_FAILED,
-    ROOMS_LOADING
+    ROOMS_LOADING,
+    ADD_ROOM_SUCCESS,
+    ADD_ROOM_FAILED,
+    DELETE_ROOM_FAILED,
+    DELETE_ROOM_SUCCESS
 } from '../actions/RoomActions'
 
 function getInitialState() {
@@ -35,8 +39,8 @@ const roomReducer = (state = initialState, action) => {
                 loading: false
             }
             saveToStorage(action.list, "");
-            return tempState ;
-            
+            return tempState;
+
         case GET_ROOMS_FAILED:
             tempState = {
                 ...state,
@@ -45,12 +49,48 @@ const roomReducer = (state = initialState, action) => {
             }
             saveToStorage(state.list, action.error);
             return tempState;
+
         case ROOMS_LOADING:
             tempState = {
                 ...state,
                 loading: true
             }
             return tempState;
+
+        case ADD_ROOM_SUCCESS:
+            tempState = {
+                ...state,
+                error: ""
+            }
+            saveToStorage(action.list, "");
+            return tempState;
+
+        case ADD_ROOM_FAILED:
+            tempState = {
+                ...state,
+                error: action.error,
+                loading: false
+            }
+            saveToStorage(state.list, action.error);
+            return tempState;
+
+        case DELETE_ROOM_SUCCESS:
+            tempState = {
+                ...state,
+                error: ""
+            }
+            saveToStorage(action.list, "");
+            return tempState;
+
+        case DELETE_ROOM_FAILED:
+            tempState = {
+                ...state,
+                error: action.error,
+                loading: false
+            }
+            saveToStorage(state.list, action.error);
+            return tempState;
+
         default:
             return state;
     }

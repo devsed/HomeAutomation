@@ -1,6 +1,29 @@
 import React from 'react';
-import { Table, Form, Button } from 'semantic-ui-react';
+import { Table, Form, Button, Select } from 'semantic-ui-react';
 import { connect } from 'react-redux';
+import { addRoom, deleteRoom } from './actions/RoomActions';
+
+const roomOptions = [
+    { text: 'Kitchen', value: 1 },
+    { text: 'Livingroom', value: 2 },
+    { text: 'Bedroom', value: 3 },
+    { text: 'Bathroom', value: 4 }
+];
+
+function GetRoomText(id) {
+    switch (id) {
+        case 1:
+            return 'Kitchen';
+        case 2:
+            return 'Livingroom';
+        case 3:
+            return 'Bedroom'
+        case 4:
+            return 'Bathroom';
+        default:
+            return 'Other room'
+    }
+}
 
 class ManageRoomsForm extends React.Component {
 
@@ -18,7 +41,9 @@ class ManageRoomsForm extends React.Component {
         }
     }
 
-    remove = (event) => {
+    delete = (event) => {
+        let homeItem = this.props.home;
+        this.props.dispatch(deleteRoom(event.target.name, homeItem._id))
     }
 
     edit = (event) => {
@@ -26,86 +51,112 @@ class ManageRoomsForm extends React.Component {
 
     submit = (event => {
         event.preventDefault();
+        let homeItem = this.props.home;
         let item = {
             "type": this.state.type,
             "name": this.state.name,
-            parentid: ""
+            "parentid": homeItem._id
         }
-        //        this.props.dispatch(addRoom(item))
+        if (this.state.name.length === 0 || this.state.type < 1) {
+            alert("Required fields missing")
+            return;
+        }
+        this.props.dispatch(addRoom(item))
     })
 
-    onChange = (event) => {
+    onChange = (event, data) => {
         let state = {}
-        state[event.target.name] = event.target.value;
+        state[data === undefined ? event.target.name : data.name] =
+            data === undefined ? event.target.value : data.value;
         this.setState(state)
     }
 
     render() {
-        let items = this.props.roomlist.map((item) => {
-            if (item._id !== 'room_999') { //Removed manage room button
-                return <Table.Row key={item._id}>
-                    <Table.Cell>{item.name}</Table.Cell>
-                    <Table.Cell>{item.type}</Table.Cell>
-                    <Table.Cell><Button onClick={this.remove} name={item._id}>Remove</Button></Table.Cell>
-                    <Table.Cell><Button onClick={this.edit} name={item._id}>Edit</Button></Table.Cell>
-                </Table.Row>
-            }
-        })
+        let list = this.props.roomlist;
+        let items = []
+
+        if (list !== undefined && list !== null) {
+            items = this.props.roomlist.map((item) => {
+                if (item._id !== 'room_999') { //Removed manage room button
+                    return <Table.Row key={item._id}>
+                        <Table.Cell>{item.name}</Table.Cell>
+                        <Table.Cell>{GetRoomText(item.type)}</Table.Cell>
+                        <Table.Cell><Button icon='trash' onClick={this.delete} name={item._id} /></Table.Cell>
+                        <Table.Cell><Button icon='edit' onClick={this.edit} name={item._id} /></Table.Cell>
+                    </Table.Row>
+                }
+            })
+        }
+        else { }
 
         return (
-            <div className="ui one column stackable center aligned page grid">
-                <div className="column six wide">
-                    <Table >
-                        <Table.Header>
-                            <Table.Row>
-                                <Table.HeaderCell>Name</Table.HeaderCell>
-                                <Table.HeaderCell>Type</Table.HeaderCell>
-                                <Table.HeaderCell></Table.HeaderCell>
-                                <Table.HeaderCell></Table.HeaderCell>
-                            </Table.Row>
-                        </Table.Header>
-                        <Table.Body>
-                            {items}
-                            <Table.Cell></Table.Cell>
-                            <Table.Cell></Table.Cell>
-                            <Table.Cell></Table.Cell>
-                            <Table.Cell><Button onClick={this.add} name='new'>New</Button></Table.Cell>
-                        </Table.Body>
-                    </Table>
-                    <Form onSubmit={this.submit}>
-                        <Form.Field>
-                            <label htmlFor="name">Name</label>
-                            <input type="text"
-                                name="name"
-                                onChange={this.onChange}
-                                value={this.state.name} />
-                        </Form.Field>
-                        <br />
+            list !== undefined ? (
+                <div className="ui one column stackable center aligned page grid">
+                    <div className="column six wide">
+                        <Table >
+                            <Table.Header>
+                                <Table.Row>
+                                    <Table.HeaderCell>Name</Table.HeaderCell>
+                                    <Table.HeaderCell>Type</Table.HeaderCell>
+                                    <Table.HeaderCell></Table.HeaderCell>
+                                    <Table.HeaderCell></Table.HeaderCell>
+                                </Table.Row>
+                            </Table.Header>
+                            <Table.Body>
+                                {items}
+                            </Table.Body>
+                        </Table>
 
-                        <Form.Field>
-                            <label htmlFor="type">Type</label>
-                            <input type="number"
-                                name="type"
-                                onChange={this.onChange}
-                                minimum="0"
-                                step="1"
-                                value={this.state.type} />
-                        </Form.Field>
-                        <br />
-
-                        <Button inverted color='red' type="submit">Add</Button>
-
-                    </Form>
-
-                </div>
-            </div>
+                        <Form onSubmit={this.submit}>
+                            <Table>
+                                <Table.Row>
+                                    <Table.Cell>
+                                        <Form.Field required>
+                                            <label htmlFor="name">Name</label>
+                                            <input type="text"
+                                                name="name"
+                                                onChange={this.onChange}
+                                                value={this.state.name}
+                                                placeholder="Give name for room" />
+                                        </Form.Field>
+                                    </Table.Cell>
+                                    <Table.Cell></Table.Cell>
+                                </Table.Row>
+                                <Table.Row>
+                                    <Table.Cell>
+                                        <Form.Field
+                                            control={Select}
+                                            options={roomOptions}
+                                            name="type"
+                                            label={{
+                                                children: "Type",
+                                                htmlFor: "type"
+                                            }}
+                                            placeholder="Select room type"
+                                            onChange={this.onChange} required >
+                                        </Form.Field>
+                                    </Table.Cell>
+                                    <Table.Cell>
+                                        <Form.Field>
+                                            <label>&nbsp;</label>
+                                            <Button inverted color='red' type="submit">Add</Button>
+                                        </Form.Field>
+                                    </Table.Cell>
+                                </Table.Row>
+                            </Table>
+                            <br />
+                        </Form>
+                    </div>
+                </div>)
+                : <div></div>
         )
     }
 }
 const mapStateToProps = (state) => {
     return {
         isLogged: state.login.isLogged,
-        roomlist: state.room.roomlist
+        roomlist: state.room.roomlist,
+        home: state.home.home
     }
 }
 
