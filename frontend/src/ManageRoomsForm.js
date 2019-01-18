@@ -109,6 +109,11 @@ class ManageRoomsForm extends React.Component {
 
                         <Form onSubmit={this.submit}>
                             <Table>
+                                <Table.Header>
+                                    <Table.Row>
+                                        <Table.HeaderCell colSpan='3'>Add room</Table.HeaderCell>
+                                    </Table.Row>
+                                </Table.Header>
                                 <Table.Row>
                                     <Table.Cell>
                                         <Form.Field required>
@@ -139,7 +144,7 @@ class ManageRoomsForm extends React.Component {
                                     <Table.Cell>
                                         <Form.Field>
                                             <label>&nbsp;</label>
-                                            <Button inverted color='red' type="submit">Add</Button>
+                                            <Button icon='save' type="submit"></Button>
                                         </Form.Field>
                                     </Table.Cell>
                                 </Table.Row>
