@@ -5,6 +5,8 @@ export const ADD_ROOM_SUCCESS = "ADD_ROOM_SUCCESS";
 export const ADD_ROOM_FAILED = "ADD_ROOM_FAILED";
 export const DELETE_ROOM_SUCCESS = "DELETE_ROOM_SUCCESS";
 export const DELETE_ROOM_FAILED = "DELETE_ROOM_FAILED";
+export const MODIFY_ROOM_SUCCESS = "MODIFY_ROOM_SUCCESS";
+export const MODIFY_ROOM_FAILED = "MODIFY_ROOM_FAILED";
 
 export const getRooms = (id) => {
     return dispatch => {
@@ -131,6 +133,47 @@ const deleteRoomSuccess = () => {
 const deleteRoomFailed = (error) => {
     return {
         type: DELETE_ROOM_FAILED,
+        error: error
+    }
+}
+
+export const modifyRoom = (item) => {
+    return dispatch => {
+        let postObject = {
+            method: "PUT",
+            mode: "cors",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(item)
+        }
+        fetch("/api/room/", postObject).then((response) => {
+            if (response.ok) {
+                response.json().then((data) => {
+                    dispatch(modifyRoomSuccess());
+                    dispatch(getRooms(item.parentid))
+                }).catch((error) => {
+                    dispatch(modifyRoomFailed("Problem adding room."));
+                })
+            } else {
+                dispatch(modifyRoomFailed("Response not ok. Status:" + response.status));
+            }
+        }).catch((error) => {
+            dispatch(getRoomsFailed("Problem adding room"));
+        });
+    }
+}
+
+const modifyRoomSuccess = () => {
+    return {
+        type: MODIFY_ROOM_SUCCESS
+    }
+}
+
+const modifyRoomFailed = (error) => {
+    return {
+        type: MODIFY_ROOM_FAILED,
         error: error
     }
 }

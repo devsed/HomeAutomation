@@ -5,7 +5,9 @@ import {
     ADD_ROOM_SUCCESS,
     ADD_ROOM_FAILED,
     DELETE_ROOM_FAILED,
-    DELETE_ROOM_SUCCESS
+    DELETE_ROOM_SUCCESS,
+    MODIFY_ROOM_FAILED,
+    MODIFY_ROOM_SUCCESS
 } from '../actions/RoomActions'
 
 function getInitialState() {
@@ -83,6 +85,23 @@ const roomReducer = (state = initialState, action) => {
             return tempState;
 
         case DELETE_ROOM_FAILED:
+            tempState = {
+                ...state,
+                error: action.error,
+                loading: false
+            }
+            saveToStorage(state.list, action.error);
+            return tempState;
+
+        case MODIFY_ROOM_SUCCESS:
+            tempState = {
+                ...state,
+                error: ""
+            }
+            saveToStorage(action.list, "");
+            return tempState;
+
+        case MODIFY_ROOM_FAILED:
             tempState = {
                 ...state,
                 error: action.error,
