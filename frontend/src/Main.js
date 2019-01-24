@@ -2,7 +2,6 @@ import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import LoginForm from './LoginForm';
 import HomeForm from './HomeForm';
-import HomeAccordion from './HomeAccordion';
 import RoomList from './RoomList';
 import ManageRoomsForm from './ManageRoomsForm'
 
@@ -26,6 +25,10 @@ export default class Main extends React.Component {
 				}/>
 				<Route path="/home/creating" render={() =>
 					this.props.isLogged && !this.homeExists() ?
+						(<HomeForm />) : (<Redirect to="/"/>)
+				}/>
+				<Route path="/home/editing" render={() =>
+					this.props.isLogged && this.homeExists() ?
 						(<HomeForm />) : (<Redirect to="/"/>)
 				}/>
 				<Route path="/managerooms" render={() =>

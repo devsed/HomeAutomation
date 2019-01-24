@@ -5,6 +5,8 @@ export const CREATE_HOME_SUCCESS = "CREATE_HOME_SUCCESS";
 export const CREATE_HOME_FAILED = "CREATE_HOME_FAILED";
 export const GET_HOME_SUCCESS = "GET_HOME_SUCCESS";
 export const GET_HOME_FAILED = "GET_HOME_FAILED";
+export const UPDATE_HOME_SUCCESS = "UPDATE_HOME_SUCCESS";
+export const UPDATE_HOME_FAILED = "UPDATE_HOME_FAILED";
 
 // Home actions
 
@@ -17,8 +19,6 @@ export const createHome = (home) => {
 			headers: {"Content-Type":"application/json"},
 			body:JSON.stringify(home)
 		}
-
-		dispatch(homeLoading());
 
 		fetch("/api/homes", postObject).then((resp) => {
 			if (resp.ok) {
@@ -67,6 +67,28 @@ export const getHome = (id, rooms) => {
 	}
 }
 
+export const updateHome = (home) => {
+	return dispatch => {
+		let postObject = {
+			method: "PUT",
+			mode: "cors",
+			credentials:"include",
+			headers: {"Content-Type":"application/json"},
+			body:JSON.stringify(home)
+		}
+
+		fetch("/api/home/", postObject).then((resp) => {
+			if (resp.ok) {
+				dispatch(updateHomeSuccess(home));
+			} else {
+				dispatch(updateHomeFailed("Problem updating home: "+resp.status));
+			}
+		}).catch((error) => {
+			dispatch(updateHomeFailed("Server responded with error: "+error));
+		});
+	}
+}
+
 	// Action creators
 
 const homeLoading = () => {
@@ -99,6 +121,20 @@ const getHomeSuccess = (home) => {
 const getHomeFailed = (error) => {
 	return {
 		type:GET_HOME_FAILED,
+		error:error
+	}
+}
+
+const updateHomeSuccess = (home) => {
+	return {
+		type:UPDATE_HOME_SUCCESS,
+		home:home
+	}
+}
+
+const updateHomeFailed = (error) => {
+	return {
+		type:UPDATE_HOME_FAILED,
 		error:error
 	}
 }

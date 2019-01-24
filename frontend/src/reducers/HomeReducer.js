@@ -3,7 +3,10 @@ import {
 	CREATE_HOME_SUCCESS,
 	CREATE_HOME_FAILED,
 	GET_HOME_SUCCESS,
-	GET_HOME_FAILED
+	GET_HOME_FAILED,
+	UPDATE_HOME_SUCCESS,
+	UPDATE_HOME_FAILED,
+
 } from '../actions/HomeActions';
 
 function getInitialState() {
@@ -30,10 +33,10 @@ function getInitialState() {
 	}
 }
 
-function saveToStorage(wasHomeCreated, error, home) {
+function saveToStorage(wasHomeCreated, home, error) {
 	sessionStorage.setItem("wasHomeCreated", wasHomeCreated);
-	sessionStorage.setItem("home_error", error);
 	sessionStorage.setItem("homeData", home);
+	sessionStorage.setItem("home_error", error);
 }
 
 let initialState = getInitialState();
@@ -58,7 +61,7 @@ const homeReducer = (state = initialState, action) => {
 				error: "",
 				loading: false
             }
-            saveToStorage(true, "");
+            saveToStorage(true, action.home, "");
 			return tempState;
 			
         case CREATE_HOME_FAILED:
@@ -67,7 +70,7 @@ const homeReducer = (state = initialState, action) => {
                 error: action.error,
                 loading: false
             }
-            saveToStorage(false, action.error);
+            saveToStorage(false, null, action.error);
 			return tempState;
 			
 		case GET_HOME_SUCCESS:
@@ -77,7 +80,7 @@ const homeReducer = (state = initialState, action) => {
                 error: "",
 				loading: false
 			}
-			saveToStorage(state.wasHomeCreated, "", action.home);
+			saveToStorage(state.wasHomeCreated, action.home, "");
 			return tempState;
 
 		case GET_HOME_FAILED:
@@ -86,7 +89,26 @@ const homeReducer = (state = initialState, action) => {
 				error: action.error,
 				loading: false
 			}
-			saveToStorage(state.wasHomeCreated, action.error);
+			saveToStorage(state.wasHomeCreated, state.home, action.error);
+			return tempState;
+
+		case UPDATE_HOME_SUCCESS:
+            tempState = {
+				...state,
+				home: action.home,
+				error: "",
+				loading: false
+            }
+            saveToStorage(state.wasHomeCreated, action.home, "");
+			return tempState;
+			
+        case UPDATE_HOME_FAILED:
+            tempState = {
+                ...state,
+                error: action.error,
+                loading: false
+            }
+            saveToStorage(state.wasHomeCreated, state.home, action.error);
 			return tempState;
 
 		default:

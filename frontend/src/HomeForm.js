@@ -1,7 +1,8 @@
 import React from 'react';
 import { Form, Select, Button } from 'semantic-ui-react';
 import { connect } from 'react-redux';
-import { createHome } from './actions/HomeActions';
+import {withRouter} from "react-router-dom";
+import { createHome, updateHome } from './actions/HomeActions';
 
 const homeOptions = [
 	{ text: 'Row house', value: 1 },
@@ -10,15 +11,17 @@ const homeOptions = [
 ];
 
 class HomeForm extends React.Component {
+	editableHome = this.props.home !== null ? true : false;
 
 	constructor(props) {
 		super(props);
+
 		this.state = {
-			name: "",
-			type: 0,
-			serviceAddress: "",
-			serviceUsername: "",
-			servicePassword: ""
+			name: this.editableHome ? this.props.home.name : "",
+			type: this.editableHome ? this.props.home.type : 0,
+			serviceAddress: this.editableHome ? this.props.home.proxySettings.address : "",
+			serviceUsername: this.editableHome ? this.props.home.proxySettings.username : "",
+			servicePassword: this.editableHome ? this.props.home.proxySettings.password : ""
 		}
 	}
 
@@ -47,14 +50,21 @@ class HomeForm extends React.Component {
 			}
 		}
 
-		this.props.dispatch(createHome(home));
+		if (event.target.name === "create") {
+			this.props.dispatch(createHome(home));
+		} else {
+			home.id = this.props.home._id;
+			this.props.dispatch(updateHome(home));
+		}
+		// Always redirect to home accordion view
+		this.props.history.push("/home/existing");
 	}
 
 	render() {
 		return (
 			<div className="ui one column stackable center aligned page grid">
 				<div className="column six wide">
-					<h2 style={{ height: 65 }} >Create Home</h2>
+					<h2 style={{ height: 65 }} >{this.editableHome ? "Update Home" : "Create Home"}</h2>
 					<Form>
 						<Form.Field required>
 							<label htmlFor="name">Home name</label>
@@ -64,7 +74,8 @@ class HomeForm extends React.Component {
 							name="type"
 							control={Select}
 							options={homeOptions}
-							label={{
+							value = {this.state.type === 0 ? "" : this.state.type} // When home is created and form entered 1st time
+							label={{                                               // value must empty to show placeholder corrctly
 								children: "Type of your house",
 								htmlFor: "type"
 							}}
@@ -85,7 +96,8 @@ class HomeForm extends React.Component {
 							<input type="password" name="servicePassword" value={this.state.servicePassword}
 								onChange={this.onChange} placeholder="Password for smart home service" required />
 						</Form.Field>
-						<Button onClick={this.submit} name="create">Create Home</Button>
+						<Button onClick={this.submit} name={this.editableHome ? "update" : "create"}
+							>{this.editableHome ? "Update" : "Create"}</Button>
 					</Form>
 				</div>
 			</div>
@@ -93,4 +105,10 @@ class HomeForm extends React.Component {
 	}
 }
 
-export default connect()(HomeForm);
+const mapStateToProps = (state) => {
+	return {
+		home: state.home.home
+	}
+}
+
+export default withRouter(connect(mapStateToProps)(HomeForm));

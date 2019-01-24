@@ -4,7 +4,7 @@ import { getRooms } from './actions/RoomActions';
 import { getHome } from './actions/HomeActions';
 import { getDevices } from './actions/DeviceActions';
 import { getFunctions } from './actions/FunctionActions';
-import { Accordion, Icon } from 'semantic-ui-react'
+import { Accordion, Button } from 'semantic-ui-react'
 import './RoomList.css';
 import { Switch, Route, Redirect } from 'react-router-dom';
 
@@ -16,7 +16,8 @@ class RoomList extends React.Component {
             roomActiveIndex: -1,
             deviceActiveIndex: -1,
             functionActiveIndex: -1,
-            manageRooms: false
+            manageRooms: false,
+			editHome: false
         }
     }
 
@@ -88,11 +89,15 @@ class RoomList extends React.Component {
         }
     }
 
-    doNothing = () => { }
+	editHome = (event) => {
+		this.setState({ editHome: true });
+	}
 
     render() {
+		if (this.state.editHome) {
+			return <Redirect to='/home/editing' />
+		}
 
-        console.log("ManageRooms :" + this.state.manageRooms);
         if (this.state.manageRooms) {
             return <Redirect to='/managerooms' />
         }
@@ -155,41 +160,43 @@ class RoomList extends React.Component {
         }
         let roomListIdx = -1;
         let roomIdList = [];
-        let roomPanels =
-            <Accordion.Accordion panels={
-                this.props.roomlist.map((room) => {
-                    roomListIdx = roomListIdx + 1;
-                    roomIdList.push({ roomListIdx: roomListIdx, roomId: room._id });
-                    return {
-                        key: room._id,
-                        title: room.name,   //title: (<div active='false'><Icon active='false' name='edit' />{room.name}</div>),
-                        content: { content: devicePanels },
-                        onTitleClick: this.getDev({ activeRoomId: room._id, roomIdList: roomIdList })
-                    }
-                })
-            }
-                activeIndex={roomActiveIndex} />
+        let roomPanels = 
+			this.props.roomlist.map((room) => {
+				roomListIdx = roomListIdx + 1;
+				roomIdList.push({ roomListIdx: roomListIdx, roomId: room._id });
+				return {
+					key: room._id,
+					title: room.name,   //title: (<div active='false'><Icon active='false' name='edit' />{room.name}</div>),
+					content: { content: devicePanels },
+					onTitleClick: this.getDev({ activeRoomId: room._id, roomIdList: roomIdList })
+				}
+            })
 
-        //Home-paneli
-        let homePanel = null;
+		//Home content
+		const HomeContent = (item) => (
+			<div>
+			  {item.name}<Button compact active floated='right' icon='edit' onClick={this.editHome} />
+			  <Accordion.Accordion panels={roomPanels} activeIndex={roomActiveIndex} />
+			</div>
+		  )
+
+        let rootPanel = null;
         let item = this.props.home;
         if (item !== null) {
-            homePanel = [
-                {
-                    key: item._id,
-                    title: (<div active='false'><Icon name='' />{item.name}</div>),
-                    content: { content: roomPanels },
-                    onTitleClick: this.doNothing() //Home-paneeli , ei ikonia, ei reagoi, aina auki
-                },]
+            rootPanel = [{
+				key: item._id,
+				content: { content: HomeContent(item) }
+            },]
         }
 
         return (
-            item !== undefined ? (<div className="ui one column stackable center aligned page grid">
-                <div className="column six wide">
-                    <Accordion panels={homePanel} defaultActiveIndex={0} styled />
-                </div>
-            </div>)
-                : (<div></div>)
+			item !== undefined ?
+				(<div className="ui one column stackable center aligned page grid">
+                	<div className="column six wide">
+						<Accordion panels={rootPanel} defaultActiveIndex={0} styled />
+                	</div>
+            	</div>)
+            : null
         )
     }
 }
