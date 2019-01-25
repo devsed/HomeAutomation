@@ -5,6 +5,9 @@ const SmartHomeHome = require('./smaHome');
 const SmartHomeRoom = require('./smaRoom');
 const SmartHomeDevice = require('./smaDevice');
 const SmartHomeFunction = require('./smaFunction');
+// npm install node-fetch --save
+const fetch = require('node-fetch');
+var cors = require('cors')
 
 var smaUser = new SmartHomeUser();
 var smaHome = new SmartHomeHome();
@@ -50,6 +53,7 @@ router.delete("/devices/:id", smaRoom.DeleteChildren.bind(smaRoom));
 router.post("/devices", smaDevice.Save.bind(smaDevice));
 // Get one Device
 router.get("/devices/:id", smaDevice.GetOne.bind(smaDevice));
+router.get("/device/:id", smaDevice.GetOne.bind(smaDevice));
 // Replace a Device
 router.put("/device", smaDevice.ReplaceOne.bind(smaDevice));
 
@@ -61,7 +65,7 @@ router.delete("/functions/:id", smaDevice.DeleteChildren.bind(smaDevice));
 // Save a Function
 router.post("/functions", smaFunction.Save.bind(smaFunction));
 // Get one Function
-router.get("/functions/:id", smaFunction.GetOne.bind(smaFunction));
+router.get("/function/:id", smaFunction.GetOne.bind(smaFunction));
 // Replace a Function
 router.put("/function", smaFunction.ReplaceOne.bind(smaFunction));
 
@@ -69,5 +73,89 @@ router.put("/function", smaFunction.ReplaceOne.bind(smaFunction));
 router.get("/users/:id", smaUser.GetOne.bind(smaUser));
 // Update (replace) an User
 router.put("/user", smaUser.ReplaceOne.bind(smaUser));
+
+const { URLSearchParams } = require('url');
+
+function ProxyUrl(settings) {
+    var plen = 0;
+    if (settings.user === "" && settings.password === "") {
+        return encodeURI(settings.addr)
+    }
+    if (settings.addr.startsWith("https://"))
+        plen = "https://".length;
+    else if (settings.addr.startsWith("http://"))
+        plen = "http://".length;
+    const protocol = settings.addr.substring(0, plen);
+    const url = settings.addr.substring(plen);
+    const user = encodeURI(settings.user).replace("@", "%40")
+    return protocol + user + ":" + encodeURI(settings.password) + "@" + encodeURI(url);
+}
+
+router.post("/proxy/test", function (req, res) {
+    fetch(ProxyUrl(req.body) + "/rest/uuid", { method: 'GET', timeout: 2000 }) // headers: { "Accept":"application/json"}
+        .then((respo) => {
+            if (respo.ok) {
+                var r = respo;
+                respo.text().then((data) => {
+                    let x = r;
+                    return res.status(200).json(data);
+                }).catch((err) => {
+                    return res.status(500).json({ "message": "oh shit" });         
+                })
+            }
+            else {
+                return res.status(respo.status).json({ "message": respo.statusText}); 
+            }
+        }).catch((err) => {
+            return res.status(404).json({ "message": "item not found" });
+        })
+})
+
+const legalTypes = ["Switch", "Dimmer", "Number", "String", "DateTime"]  // "Color"
+const readWriteTypes = 2;
+
+router.get("/proxy/devFunctypes/:all*?", function(req,res) {  // :all*? means that 'all' is an optional parameter
+    const endind = (req.params.all == "all" || req.params.all == 1 ) ? legalTypes.length : readWriteTypes;
+    let ret = []
+    for(let i = 0; i < endind; i++) {
+        ret.push(legalTypes[i]);
+    }
+    return res.status(200).json(ret);
+})
+
+router.get("/proxy/devFuncs/:homeid", function (req, res) {
+    smaHome.model.findById(req.params.homeid, function (err, home) {
+        if (err || !home) {
+            return res.status(404).json({ "message": "home not found" });
+        }
+        fetch(ProxyUrl(home.proxySettings) + "/rest/items", { method: 'GET' })
+            .then((resp) => {
+                if (resp.ok) {
+                    resp.json().then((data) => {
+                        let ret = [];
+                        data.forEach(element => {
+                            let ind = legalTypes.indexOf(element.type);
+                            if (ind > -1) {
+                                var cell = {
+                                    "state": element.state,
+                                    "type": element.type,
+                                    "name": element.name,
+                                    "label": element.label,
+                                    "controllable": (ind < readWriteTypes)
+                                }
+                                ret.push(cell);
+                            }
+                        });
+                        return res.status(200).json(ret);
+                    })
+                }
+                else {
+                    return res.status(resp.status).json({ "message": resp.statusText}); 
+                }
+            }).catch((err) => {
+                return res.status(404).json({ "message": "items not found" });
+            })
+    })
+})
 
 module.exports = router;

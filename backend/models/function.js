@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 let Schema = mongoose.Schema({
     name:String,
-    funtionid:String,
+    functionid:String,
     type:Number,
     parentid:String
 });
