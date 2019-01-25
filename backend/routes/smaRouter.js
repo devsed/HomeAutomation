@@ -52,7 +52,6 @@ router.delete("/devices/:id", smaRoom.DeleteChildren.bind(smaRoom));
 // Save a Device
 router.post("/devices", smaDevice.Save.bind(smaDevice));
 // Get one Device
-router.get("/devices/:id", smaDevice.GetOne.bind(smaDevice));
 router.get("/device/:id", smaDevice.GetOne.bind(smaDevice));
 // Replace a Device
 router.put("/device", smaDevice.ReplaceOne.bind(smaDevice));
