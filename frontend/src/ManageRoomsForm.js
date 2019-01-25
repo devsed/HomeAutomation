@@ -40,32 +40,52 @@ class ManageRoomsForm extends React.Component {
 
     componentDidMount() {
         if (this.props.isLogged) {
+
         }
     }
 
-    delete = (event) => {
+    delete = (item) => {
         let homeItem = this.props.home;
-        this.props.dispatch(deleteRoom(event.target.name, homeItem._id))
+        let homeId="";
+        // Edit home changes index property name
+        if (homeItem.hasOwnProperty('_id')) {
+            homeId = homeItem._id;
+        }
+        else homeId = homeItem.id;
+
+        //Home-id because roomlist update needs it
+        this.props.dispatch(deleteRoom(item._id, homeId))
     }
 
     showEditView = (event, data) => {
-        this.setState({ editViewVisible: true });
-        this.setState({ name: data.name });
-        this.setState({ type: data.type });
-        this.setState({ _id: data._id });
+        this.setState({
+            editViewVisible: true,
+            name: data.name,
+            type: data.type,
+            _id: data._id
+        });
     }
 
     showAddView = () => {
-        this.setState({ addViewVisible: true })
+        this.setState({
+            addViewVisible: true,
+            name: "", type: ""
+        })
     }
 
     submit = (event) => {
         event.preventDefault();
         let homeItem = this.props.home;
+        let parentid = "";
+        // Edit home changes index property name
+        if (homeItem.hasOwnProperty('_id')) {
+            parentid = homeItem._id;
+        }
+        else parentid = homeItem.id;
         let item = {
             "type": this.state.type,
             "name": this.state.name,
-            "parentid": homeItem._id
+            "parentid": parentid
         }
         if (this.state.name.length === 0 || this.state.type < 1) {
             alert("Required fields missing")
@@ -78,19 +98,28 @@ class ManageRoomsForm extends React.Component {
     update = (event, data) => {
         event.preventDefault();
         let homeItem = this.props.home;
+        let parentid = "";
+        // Edit home changes index property name
+        if (homeItem.hasOwnProperty('_id')) {
+            parentid = homeItem._id;
+        }
+        else parentid = homeItem.id;
+
         let item = {
             "type": this.state.type,
             "name": this.state.name,
             "id": this.state._id,
-            "parentid": homeItem._id
+            "parentid": parentid
         }
         if (this.state.name.length === 0 || this.state.type < 1) {
             alert("Required fields missing")
             return;
         }
         this.props.dispatch(modifyRoom(item));
-        this.setState({ addViewVisible: false })
-        this.setState({ editViewVisible: false })
+        this.setState({
+            addViewVisible: false,
+            editViewVisible: false
+        })
     }
 
     onChange = (event, data) => {
@@ -100,27 +129,47 @@ class ManageRoomsForm extends React.Component {
         this.setState(state)
     }
 
+    cancel = () => {
+        this.setState({
+            addViewVisible: false,
+            editViewVisible: false
+        });
+    }
+
     render() {
         let items = [];
-        let contentedit = false;
 
         items = this.props.roomlist.map((item) => {
-            if (item._id !== 'room_999') { //Removed manage room button
+            if (item._id !== 'room_999') { //Leave out manage room button
                 return <Table.Row key={item._id}>
                     <Table.Cell >{item.name}</Table.Cell>
                     {<Table.Cell >{GetRoomText(item.type)}</Table.Cell>}
-                    <Table.Cell><Button icon='trash' onClick={this.delete} name={item._id} /></Table.Cell>
-                    <Table.Cell><Button icon='edit' onClick={this.showEditView} type={item.type} name={item.name} _id={item._id} /></Table.Cell>
+                    <Table.Cell><Button
+                        icon='trash'
+                        onClick={() => {
+                            if (window.confirm('Are you shure?')) this.delete(item)
+                        }}
+                        name={item._id} />
+                    </Table.Cell>
+                    <Table.Cell><Button
+                        icon='edit'
+                        onClick={this.showEditView}
+                        type={item.type}
+                        name={item.name}
+                        _id={item._id} />
+                    </Table.Cell>
                 </Table.Row>
             }
         })
 
         let addBlock =
-            <Form onSubmit={this.state.addViewVisible ? this.submit: this.update}>
+            <Form onSubmit={this.state.addViewVisible ? this.submit : this.update}>
                 <Table>
                     <Table.Header>
                         <Table.Row>
-                            <Table.HeaderCell colSpan='3'>{this.state.addViewVisible ? 'Add room': 'Edit room'}</Table.HeaderCell>
+                            <Table.HeaderCell
+                                colSpan='3'>{this.state.addViewVisible ? 'Add room' : 'Edit room'}
+                            </Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
                     <Table.Row>
@@ -134,7 +183,8 @@ class ManageRoomsForm extends React.Component {
                                     placeholder="Give name for room" />
                             </Form.Field>
                         </Table.Cell>
-                        <Table.Cell></Table.Cell>
+                        <Table.Cell />
+                        <Table.Cell />
                     </Table.Row>
                     <Table.Row>
                         <Table.Cell>
@@ -158,19 +208,26 @@ class ManageRoomsForm extends React.Component {
                                 <Button icon='save' type="submit"></Button>
                             </Form.Field>
                         </Table.Cell>
+                        <Table.Cell>
+                            <Form.Field>
+                                <label>&nbsp;</label>
+                                <Button icon='undo' type="" onClick={this.cancel}></Button>
+                            </Form.Field>
+                        </Table.Cell>
                     </Table.Row>
                 </Table>
                 <br />
             </Form>
 
-        let addButton = <Button onClick={this.showAddView}>Add</Button>
+        let addButton = <Button onClick={this.showAddView} icon='plus' />
 
         return (
             <div className="ui one column stackable center aligned page grid">
                 <div className="column six wide">
+                    <h3>Manage rooms</h3>
                     <Table selectable>
                         <Table.Header>
-                            <Table.Row>
+                            <Table.Row >
                                 <Table.HeaderCell>Name</Table.HeaderCell>
                                 <Table.HeaderCell>Type</Table.HeaderCell>
                                 <Table.HeaderCell></Table.HeaderCell>
