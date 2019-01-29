@@ -55,6 +55,8 @@ router.post("/devices", smaDevice.Save.bind(smaDevice));
 router.get("/device/:id", smaDevice.GetOne.bind(smaDevice));
 // Replace a Device
 router.put("/device", smaDevice.ReplaceOne.bind(smaDevice));
+// Delete a Device
+router.delete("/device/:id", smaDevice.Delete.bind(smaDevice));
 
 // Get children of a Device, i.e. Functions of that Device
 router.get("/functions/:id", smaDevice.GetChildren.bind(smaDevice));

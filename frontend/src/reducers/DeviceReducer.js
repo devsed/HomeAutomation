@@ -1,7 +1,14 @@
 import {
     GET_DEVICES_SUCCESS,
     GET_DEVICES_FAILED,
-    DEVICES_LOADING
+    DEVICES_LOADING,
+    ADD_DEVICE_SUCCESS,
+    ADD_DEVICE_FAILED,
+    DELETE_DEVICE_FAILED,
+    DELETE_DEVICE_SUCCESS,
+    MODIFY_DEVICE_FAILED,
+    MODIFY_DEVICE_SUCCESS
+
 } from '../actions/DeviceActions'
 
 function getInitialState() {
@@ -52,6 +59,58 @@ const deviceReducer = (state = initialState, action) => {
             return tempState;
         default:
             return state;
+
+        case ADD_DEVICE_SUCCESS:
+            tempState = {
+                ...state,
+                error: ""
+            }
+            saveToStorage(action.list, "");
+            return tempState;
+
+        case ADD_DEVICE_FAILED:
+            tempState = {
+                ...state,
+                error: action.error,
+                loading: false
+            }
+            saveToStorage(state.list, action.error);
+            return tempState;
+
+        case DELETE_DEVICE_SUCCESS:
+            tempState = {
+                ...state,
+                error: ""
+            }
+            saveToStorage(action.list, "");
+            return tempState;
+
+        case DELETE_DEVICE_FAILED:
+            tempState = {
+                ...state,
+                error: action.error,
+                loading: false
+            }
+            saveToStorage(state.list, action.error);
+            return tempState;
+
+        case MODIFY_DEVICE_SUCCESS:
+            tempState = {
+                ...state,
+                error: ""
+            }
+            saveToStorage(action.list, "");
+            return tempState;
+
+        case MODIFY_DEVICE_FAILED:
+            tempState = {
+                ...state,
+                error: action.error,
+                loading: false
+            }
+            saveToStorage(state.list, action.error);
+            return tempState;
+
     }
 }
 export default deviceReducer

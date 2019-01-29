@@ -3,7 +3,8 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import LoginForm from './LoginForm';
 import HomeForm from './HomeForm';
 import RoomList from './RoomList';
-import ManageRoomsForm from './ManageRoomsForm'
+import ManageRoomsForm from './ManageRoomsForm';
+import ManageDevicesForm from './ManageDevicesForm';
 
 export default class Main extends React.Component {
 
@@ -12,7 +13,7 @@ export default class Main extends React.Component {
 	}
 
     render() {
-        return (
+			return (
 			<Switch>
 				<Route exact path="/" render={() =>
 					this.props.isLogged ? (this.homeExists() ?
@@ -34,6 +35,11 @@ export default class Main extends React.Component {
 				<Route path="/managerooms" render={() =>
 					this.props.isLogged && this.homeExists() ?
 						(<ManageRoomsForm />) : (<Redirect to="/"/>)
+				}/>
+				<Route path="/managedevices" render={() =>
+					this.props.isLogged && this.homeExists() ?
+						(<ManageDevicesForm />) : 
+						(<Redirect to="/"/>)
 				}/>
 			</Switch>
         )

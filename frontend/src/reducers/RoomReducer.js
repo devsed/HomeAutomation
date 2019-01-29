@@ -7,25 +7,29 @@ import {
     DELETE_ROOM_FAILED,
     DELETE_ROOM_SUCCESS,
     MODIFY_ROOM_FAILED,
-    MODIFY_ROOM_SUCCESS
+    MODIFY_ROOM_SUCCESS,
+    ACTIVE_ROOM_CHANGED
 } from '../actions/RoomActions'
 
 function getInitialState() {
     let list = []
     let error = ""
+    let activeId = ""
     if (sessionStorage.getItem("room_error")) {
         error = sessionStorage.getItem("room_error");
     }
     return {
         roomlist: list,
         error: error,
-        loading: false
+        loading: false,
+        activeId: activeId
     }
 }
 
-function saveToStorage(list, error) {
+function saveToStorage(list, error, activeId) {
     sessionStorage.setItem("list", list);
     sessionStorage.setItem("room_error", error);
+    sessionStorage.setItem("activeId", activeId);
 }
 
 let initialState = getInitialState();
@@ -108,6 +112,16 @@ const roomReducer = (state = initialState, action) => {
                 loading: false
             }
             saveToStorage(state.list, action.error);
+            return tempState;
+
+        case ACTIVE_ROOM_CHANGED:
+            tempState = {
+                ...state,
+                error: action.error,
+                activeId: action.activeId,
+                loading: false
+            }
+            saveToStorage(state.list, action.error, action.activeId);
             return tempState;
 
         default:

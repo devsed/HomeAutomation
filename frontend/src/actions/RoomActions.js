@@ -7,6 +7,7 @@ export const DELETE_ROOM_SUCCESS = "DELETE_ROOM_SUCCESS";
 export const DELETE_ROOM_FAILED = "DELETE_ROOM_FAILED";
 export const MODIFY_ROOM_SUCCESS = "MODIFY_ROOM_SUCCESS";
 export const MODIFY_ROOM_FAILED = "MODIFY_ROOM_FAILED";
+export const ACTIVE_ROOM_CHANGED = "ACTIVE_ROOM_CHANGED";
 
 export const getRooms = (id) => {
     return dispatch => {
@@ -32,6 +33,18 @@ export const getRooms = (id) => {
         }).catch((error) => {
             dispatch(getRoomsFailed("Problem loading list"));
         });
+    }
+}
+export const changeActiveRoomId=(id)=>{
+    return dispatch => {
+        dispatch(activeRoomChanged(id));
+    }
+}
+
+const activeRoomChanged=(id)=>{
+    return{
+        type:ACTIVE_ROOM_CHANGED,
+        activeId:id
     }
 }
 
