@@ -58,10 +58,10 @@ class SmartHomeRoot {
             }
 
             self.childModel.find({ "parentid": req.params.id }, function (err, items) {
-                if (err || !items || items.length == 0) {
+                if (err || !items) { 
                     return res.status(404).json({ "message": "no items" });
                 }
-                res.status(200).json(items)
+                res.status(200).json(items);
             })
         })
     }
