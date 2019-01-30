@@ -25,13 +25,13 @@ export const createHome = (home) => {
 				resp.json().then((data) => {
 					dispatch(createHomeSuccess(data));
 				}).catch((error) => {
-					dispatch(createHomeFailed("Problem creating home"));
+					dispatch(createHomeFailed("Problem creating home: "+error));
 				})
 			} else {
 				dispatch(createHomeFailed("A home has already created: "+resp.status));
 			}
 		}).catch((error) => {
-			dispatch(createHomeFailed("Server responded with error"));
+			dispatch(createHomeFailed("Server responded with error: "+error));
 		});
 	}
 }
@@ -47,7 +47,7 @@ export const getHome = (id, rooms) => {
 
 		dispatch(homeLoading());
 
-		fetch("/api/homes/"+id, getObject).then((resp) => {
+		fetch("/api/home/"+id, getObject).then((resp) => {
 			if (resp.ok) {
 				resp.json().then((data) => {
 					dispatch(getHomeSuccess(data));
@@ -55,19 +55,19 @@ export const getHome = (id, rooms) => {
 						dispatch(getRooms(data._id))
 					}
 				}).catch((error) => {
-					dispatch(getHomeFailed("Problem loading home with rooms"));
+					dispatch(getHomeFailed("Problem loading home with rooms: "+error));
 				})
 			} else {
 				dispatch(getHomeFailed("Response not ok. Status: "+resp.status));
 			}
 
 		}).catch((error) => {
-			dispatch(getHomeFailed("Problem loading home with rooms"));
+			dispatch(getHomeFailed("Problem loading home with rooms: "+error));
 		});
 	}
 }
 
-export const updateHome = (home) => {
+export const updateHome = (home, id) => {
 	return dispatch => {
 		let postObject = {
 			method: "PUT",
@@ -77,9 +77,13 @@ export const updateHome = (home) => {
 			body:JSON.stringify(home)
 		}
 
-		fetch("/api/home/", postObject).then((resp) => {
+		fetch("/api/home/"+id, postObject).then((resp) => {
 			if (resp.ok) {
-				dispatch(updateHomeSuccess(home));
+				resp.json().then((data) => {
+					dispatch(updateHomeSuccess(data));
+				}).catch((error) => {
+					dispatch(updateHomeFailed("Problem updating home: "+error));
+				});
 			} else {
 				dispatch(updateHomeFailed("Problem updating home: "+resp.status));
 			}

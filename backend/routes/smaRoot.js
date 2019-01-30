@@ -35,16 +35,16 @@ class SmartHomeRoot {
             type: req.body.type
         });
         this._load(item, req);
-        if (!req.body.id) {
+        if (!req.params.id) {
             return res.status(404).json({ "message": "Parameter id missing." });
         }
-        item._id = req.body.id;
-        this.model.replaceOne({ "_id": req.body.id }, item, function (err) {
+        item._id = req.params.id;
+        this.model.replaceOne({ "_id": req.params.id }, item, function (err) {
             if (err) {
                 console.log(err.message);
                 return res.status(404).json({ "message": "item not found" });
             }
-            return res.status(200).json({ "message": "success" });
+            return res.status(200).json(item);
         });
     }
     GetChildren(req, res, next) {

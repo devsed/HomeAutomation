@@ -53,8 +53,8 @@ class HomeForm extends React.Component {
 		if (event.target.name === "create") {
 			this.props.dispatch(createHome(home));
 		} else {
-			home.id = this.props.home._id;
-			this.props.dispatch(updateHome(home));
+			// home.id = this.props.home._id;
+			this.props.dispatch(updateHome(home, this.props.home._id));
 		}
 		// Always redirect to home accordion view
 		this.props.history.push("/home/existing");

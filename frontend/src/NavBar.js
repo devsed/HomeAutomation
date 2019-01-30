@@ -25,9 +25,16 @@ class NavBar extends React.Component {
         } else {
             navbar = <div style={{ height: 65 }} />
         }
-        if (this.props.loginError.length > 0) {
+        if (this.props.isLogged && this.props.actionError.length > 0) {
             navbar = <div style={{ height: 65 }}>
-                <p>Error:{this.props.loginError}</p></div>
+                <p>Error: {this.props.actionError}</p>
+				<List horizontal>
+					<List.Item>
+						<Link name="logout"
+							to="/" onClick={this.logout}>Logout</Link>
+					</List.Item>
+				</List>
+			</div>
         }
         return (
             <div style={{ height: 65 }}>
@@ -38,15 +45,24 @@ class NavBar extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-    let loading=false;
-    let error="";
-    if(state.login.error.length>0) {
-        error=state.login.error
-    }
+	let loading=false;
+	let actionErrors = [
+		state.login.error,
+		state.home.error,
+		state.room.error,
+		state.device.error,
+		state.function.error
+	]
+
+	function getError(actionError) {
+		return actionError.length > 0;
+	}
+	let error = actionErrors.find(getError);
+
     return {
         isLogged: state.login.isLogged,
         loading: loading,
-        loginError: error
+        actionError: error !== undefined ? error : ""
     }
 }
 
