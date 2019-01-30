@@ -21,6 +21,7 @@ let router = express.Router();
 router.get("/homes", smaHome.Items.bind(smaHome))
 // Save a Home
 router.post("/homes", smaHome.Save.bind(smaHome));
+router.post("/home", smaHome.Save.bind(smaHome));
 // Get one Home
 router.get("/home/:id", smaHome.GetOne.bind(smaHome));
 // Replace (update) a Home
@@ -55,8 +56,6 @@ router.post("/devices", smaDevice.Save.bind(smaDevice));
 router.get("/device/:id", smaDevice.GetOne.bind(smaDevice));
 // Replace a Device
 router.put("/device/:id", smaDevice.ReplaceOne.bind(smaDevice));
-// Delete a Device
-router.delete("/device/:id", smaDevice.Delete.bind(smaDevice));
 
 // Get children of a Device, i.e. Functions of that Device
 router.get("/functions/:id", smaDevice.GetChildren.bind(smaDevice));
@@ -72,23 +71,9 @@ router.put("/function/:id", smaFunction.ReplaceOne.bind(smaFunction));
 
 const { URLSearchParams } = require('url');
 
-function ProxyUrl(settings) {
-    var plen = 0;
-    if (settings.user === "" && settings.password === "") {
-        return encodeURI(settings.addr)
-    }
-    if (settings.addr.startsWith("https://"))
-        plen = "https://".length;
-    else if (settings.addr.startsWith("http://"))
-        plen = "http://".length;
-    const protocol = settings.addr.substring(0, plen);
-    const url = settings.addr.substring(plen);
-    const user = encodeURI(settings.user).replace("@", "%40")
-    return protocol + user + ":" + encodeURI(settings.password) + "@" + encodeURI(url);
-}
 
 router.post("/proxy/test", function (req, res) {
-    fetch(ProxyUrl(req.body) + "/rest/uuid", { method: 'GET', timeout: 2000 }) // headers: { "Accept":"application/json"}
+    fetch(smaHome.ProxyUrl(req.body) + "/rest/uuid", { method: 'GET', timeout: 2000 }) // headers: { "Accept":"application/json"}
         .then((respo) => {
             if (respo.ok) {
                 var r = respo;
@@ -107,8 +92,6 @@ router.post("/proxy/test", function (req, res) {
         })
 })
 
-const legalTypes = ["Switch", "Dimmer", "Number", "String", "DateTime"]  // "Color"
-const readWriteTypes = 2;
 
 router.get("/proxy/devFunctypes/:all*?", function(req,res) {  // :all*? means that 'all' is an optional parameter
     const endind = (req.params.all == "all" || req.params.all == 1 ) ? legalTypes.length : readWriteTypes;
@@ -124,25 +107,12 @@ router.get("/proxy/devFuncs/:homeid", function (req, res) {
         if (err || !home) {
             return res.status(404).json({ "message": "home not found" });
         }
-        fetch(ProxyUrl(home.proxySettings) + "/rest/items", { method: 'GET' })
+        fetch(smaHome.ProxyUrl(home.proxySettings) + "/rest/items", { method: 'GET' })
             .then((resp) => {
                 if (resp.ok) {
                     resp.json().then((data) => {
-                        let ret = [];
-                        data.forEach(element => {
-                            let ind = legalTypes.indexOf(element.type);
-                            if (ind > -1) {
-                                var cell = {
-                                    "state": element.state,
-                                    "type": element.type,
-                                    "name": element.name,
-                                    "label": element.label,
-                                    "controllable": (ind < readWriteTypes)
-                                }
-                                ret.push(cell);
-                            }
-                        });
-                        return res.status(200).json(ret);
+                        let parsed = smaDevice.parseFuncData(data);
+                        return res.status(200).json(parsed);
                     })
                 }
                 else {
