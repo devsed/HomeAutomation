@@ -150,7 +150,7 @@ const deleteRoomFailed = (error) => {
     }
 }
 
-export const modifyRoom = (item) => {
+export const modifyRoom = (item, id) => {
     return dispatch => {
         let postObject = {
             method: "PUT",
@@ -161,7 +161,7 @@ export const modifyRoom = (item) => {
             },
             body: JSON.stringify(item)
         }
-        fetch("/api/room/", postObject).then((response) => {
+        fetch("/api/room/"+id, postObject).then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
                     dispatch(modifyRoomSuccess());

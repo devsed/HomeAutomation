@@ -117,7 +117,6 @@ const roomReducer = (state = initialState, action) => {
         case ACTIVE_ROOM_CHANGED:
             tempState = {
                 ...state,
-                error: action.error,
                 activeId: action.activeId,
                 loading: false
             }

@@ -63,7 +63,8 @@ const deviceReducer = (state = initialState, action) => {
         case ADD_DEVICE_SUCCESS:
             tempState = {
                 ...state,
-                error: ""
+                error: "",
+                loading: false
             }
             saveToStorage(action.list, "");
             return tempState;

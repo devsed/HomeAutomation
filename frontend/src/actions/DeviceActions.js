@@ -71,7 +71,7 @@ export const addDevice = (item) => {
             if (response.ok) {
                 response.json().then((data) => {
                     dispatch(addDeviceSuccess());
-                    dispatch(getDevices(item.parentid))
+                    dispatch(getDevices(item.parentid));
                 }).catch((error) => {
                     dispatch(addDeviceFailed("Problem adding device."));
                 })
@@ -138,7 +138,7 @@ const deleteDeviceFailed = (error) => {
     }
 }
 
-export const modifyDevice = (item) => {
+export const modifyDevice = (item, id) => {
     return dispatch => {
         let postObject = {
             method: "PUT",
@@ -149,7 +149,7 @@ export const modifyDevice = (item) => {
             },
             body: JSON.stringify(item)
         }
-        fetch("/api/device/", postObject).then((response) => {
+        fetch("/api/device/"+id, postObject).then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
                     dispatch(modifyDeviceSuccess());

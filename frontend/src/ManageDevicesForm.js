@@ -95,7 +95,7 @@ class ManageDevicesForm extends React.Component {
             alert("Required fields missing")
             return;
         }
-        this.props.dispatch(modifyDevice(item));
+        this.props.dispatch(modifyDevice(item, item.id));
         this.setState({
             addViewVisible: false,
             editViewVisible: false

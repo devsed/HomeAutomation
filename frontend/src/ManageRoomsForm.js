@@ -115,7 +115,7 @@ class ManageRoomsForm extends React.Component {
             alert("Required fields missing")
             return;
         }
-        this.props.dispatch(modifyRoom(item));
+        this.props.dispatch(modifyRoom(item, item.id));
         this.setState({
             addViewVisible: false,
             editViewVisible: false
