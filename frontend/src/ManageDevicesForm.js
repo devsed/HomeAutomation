@@ -3,26 +3,17 @@ import { Table, Form, Button, Select } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { addDevice, deleteDevice, modifyDevice } from './actions/DeviceActions';
 
-const options = [
+const deviceOptions = [
     { text: 'Light', value: 1 },
     { text: 'Switch', value: 2 },
     { text: 'Heating', value: 3 },
     { text: 'Camera', value: 4 }
 ];
 
-function GetText(id) {
-    switch (id) {
-        case 1:
-            return 'Light';
-        case 2:
-            return 'Switch';
-        case 3:
-            return 'Heating'
-        case 4:
-            return 'Camera';
-        default:
-            return 'Other device'
-    }
+function getDeviceName(type) {
+	return deviceOptions.some(function (option) {
+		return type === option.value && option.text;
+	});
 }
 
 class ManageDevicesForm extends React.Component {
@@ -123,7 +114,7 @@ class ManageDevicesForm extends React.Component {
             if (item._id !== 'device_999') { //Leave out manage device button
                 return <Table.Row key={item._id}>
                     <Table.Cell >{item.name}</Table.Cell>
-                    {<Table.Cell >{GetText(item.type)}</Table.Cell>}
+                    {<Table.Cell ><aside>{getDeviceName(item.type)}</aside></Table.Cell>}
                     <Table.Cell><Button
                         icon='trash'
                         onClick={() => {
@@ -139,7 +130,7 @@ class ManageDevicesForm extends React.Component {
                         _id={item._id} />
                     </Table.Cell>
                 </Table.Row>
-            }
+            } else { return <Table.Row></Table.Row> }
         })
 
         let addBlock =
@@ -152,49 +143,51 @@ class ManageDevicesForm extends React.Component {
                             </Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
-                    <Table.Row>
-                        <Table.Cell>
-                            <Form.Field required>
-                                <label htmlFor="name">Name</label>
-                                <input type="text"
-                                    name="name"
-                                    onChange={this.onChange}
-                                    value={this.state.name}
-                                    placeholder="Give name for room" />
-                            </Form.Field>
-                        </Table.Cell>
-                        <Table.Cell />
-                        <Table.Cell />
-                    </Table.Row>
-                    <Table.Row>
-                        <Table.Cell>
-                            <Form.Field
-                                control={Select}
-                                options={options}
-                                name="type"
-                                label={{
-                                    children: "Type",
-                                    htmlFor: "type"
-                                }}
-                                placeholder="Select room type"
-                                onChange={this.onChange}
-                                required
-                                value={this.state.type}>
-                            </Form.Field>
-                        </Table.Cell>
-                        <Table.Cell>
-                            <Form.Field>
-                                <label>&nbsp;</label>
-                                <Button icon='save' type="submit"></Button>
-                            </Form.Field>
-                        </Table.Cell>
-                        <Table.Cell>
-                            <Form.Field>
-                                <label>&nbsp;</label>
-                                <Button icon='undo' type="" onClick={this.cancel}></Button>
-                            </Form.Field>
-                        </Table.Cell>
-                    </Table.Row>
+					<Table.Body>
+						<Table.Row>
+							<Table.Cell>
+								<Form.Field required>
+									<label htmlFor="name">Name</label>
+									<input type="text"
+										name="name"
+										onChange={this.onChange}
+										value={this.state.name}
+										placeholder="Give name for room" />
+								</Form.Field>
+							</Table.Cell>
+							<Table.Cell />
+							<Table.Cell />
+						</Table.Row>
+						<Table.Row>
+							<Table.Cell>
+								<Form.Field
+									control={Select}
+									options={deviceOptions}
+									name="type"
+									label={{
+										children: "Type",
+										htmlFor: "type"
+									}}
+									placeholder="Select room type"
+									onChange={this.onChange}
+									required
+									value={this.state.type}>
+								</Form.Field>
+							</Table.Cell>
+							<Table.Cell>
+								<Form.Field>
+									<label>&nbsp;</label>
+									<Button icon='save' type="submit"></Button>
+								</Form.Field>
+							</Table.Cell>
+							<Table.Cell>
+								<Form.Field>
+									<label>&nbsp;</label>
+									<Button icon='undo' type="" onClick={this.cancel}></Button>
+								</Form.Field>
+							</Table.Cell>
+						</Table.Row>
+					</Table.Body>
                 </Table>
                 <br />
             </Form>

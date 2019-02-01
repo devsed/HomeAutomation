@@ -7,22 +7,15 @@ const roomOptions = [
     { text: 'Kitchen', value: 1 },
     { text: 'Livingroom', value: 2 },
     { text: 'Bedroom', value: 3 },
-    { text: 'Bathroom', value: 4 }
+	{ text: 'Bathroom', value: 4 },
+	{ text: 'Workroom', value: 5 },
+	{ text: 'Laundry room', value: 6 }
 ];
 
-function GetRoomText(id) {
-    switch (id) {
-        case 1:
-            return 'Kitchen';
-        case 2:
-            return 'Livingroom';
-        case 3:
-            return 'Bedroom'
-        case 4:
-            return 'Bathroom';
-        default:
-            return 'Other room'
-    }
+function getRoomName(type) {
+	return roomOptions.some(function (option) {
+		return type === option.value && option.text;
+	});
 }
 
 class ManageRoomsForm extends React.Component {
@@ -143,7 +136,7 @@ class ManageRoomsForm extends React.Component {
             if (item._id !== 'room_999') { //Leave out manage room button
                 return <Table.Row key={item._id}>
                     <Table.Cell >{item.name}</Table.Cell>
-                    {<Table.Cell >{GetRoomText(item.type)}</Table.Cell>}
+                    {<Table.Cell ><aside>{getRoomName(item.type)}</aside></Table.Cell>}
                     <Table.Cell><Button
                         icon='trash'
                         onClick={() => {
@@ -159,7 +152,7 @@ class ManageRoomsForm extends React.Component {
                         _id={item._id} />
                     </Table.Cell>
                 </Table.Row>
-            }
+            } else { return <Table.Row></Table.Row> }
         })
 
         let addBlock =
@@ -172,49 +165,51 @@ class ManageRoomsForm extends React.Component {
                             </Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
-                    <Table.Row>
-                        <Table.Cell>
-                            <Form.Field required>
-                                <label htmlFor="name">Name</label>
-                                <input type="text"
-                                    name="name"
-                                    onChange={this.onChange}
-                                    value={this.state.name}
-                                    placeholder="Give name for room" />
-                            </Form.Field>
-                        </Table.Cell>
-                        <Table.Cell />
-                        <Table.Cell />
-                    </Table.Row>
-                    <Table.Row>
-                        <Table.Cell>
-                            <Form.Field
-                                control={Select}
-                                options={roomOptions}
-                                name="type"
-                                label={{
-                                    children: "Type",
-                                    htmlFor: "type"
-                                }}
-                                placeholder="Select room type"
-                                onChange={this.onChange}
-                                required
-                                value={this.state.type}>
-                            </Form.Field>
-                        </Table.Cell>
-                        <Table.Cell>
-                            <Form.Field>
-                                <label>&nbsp;</label>
-                                <Button icon='save' type="submit"></Button>
-                            </Form.Field>
-                        </Table.Cell>
-                        <Table.Cell>
-                            <Form.Field>
-                                <label>&nbsp;</label>
-                                <Button icon='undo' type="" onClick={this.cancel}></Button>
-                            </Form.Field>
-                        </Table.Cell>
-                    </Table.Row>
+					<Table.Body>
+						<Table.Row>
+							<Table.Cell>
+								<Form.Field required>
+									<label htmlFor="name">Name</label>
+									<input type="text"
+										name="name"
+										onChange={this.onChange}
+										value={this.state.name}
+										placeholder="Give name for room" />
+								</Form.Field>
+							</Table.Cell>
+							<Table.Cell />
+							<Table.Cell />
+						</Table.Row>
+						<Table.Row>
+							<Table.Cell>
+								<Form.Field
+									control={Select}
+									options={roomOptions}
+									name="type"
+									label={{
+										children: "Type",
+										htmlFor: "type"
+									}}
+									placeholder="Select room type"
+									onChange={this.onChange}
+									required
+									value={this.state.type}>
+								</Form.Field>
+							</Table.Cell>
+							<Table.Cell>
+								<Form.Field>
+									<label>&nbsp;</label>
+									<Button icon='save' type="submit"></Button>
+								</Form.Field>
+							</Table.Cell>
+							<Table.Cell>
+								<Form.Field>
+									<label>&nbsp;</label>
+									<Button icon='undo' type="" onClick={this.cancel}></Button>
+								</Form.Field>
+							</Table.Cell>
+						</Table.Row>
+					</Table.Body>
                 </Table>
                 <br />
             </Form>
