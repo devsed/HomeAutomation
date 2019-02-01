@@ -1,5 +1,3 @@
-import { getRooms } from '../actions/RoomActions';
-
 export const LOADING_HOME = "LOADING_HOME";
 export const CREATE_HOME_SUCCESS = "CREATE_HOME_SUCCESS";
 export const CREATE_HOME_FAILED = "CREATE_HOME_FAILED";
@@ -36,7 +34,7 @@ export const createHome = (home) => {
 	}
 }
 
-export const getHome = (id, rooms) => {
+export const getHome = (id) => {
 	return dispatch => {
 		let getObject = {
 			method: "GET",
@@ -51,9 +49,6 @@ export const getHome = (id, rooms) => {
 			if (resp.ok) {
 				resp.json().then((data) => {
 					dispatch(getHomeSuccess(data));
-					if(rooms){
-						dispatch(getRooms(data._id))
-					}
 				}).catch((error) => {
 					dispatch(getHomeFailed("Problem loading home with rooms: "+error));
 				})
