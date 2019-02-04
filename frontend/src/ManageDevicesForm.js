@@ -152,7 +152,7 @@ class ManageDevicesForm extends React.Component {
 										name="name"
 										onChange={this.onChange}
 										value={this.state.name}
-										placeholder="Give name for room" />
+										placeholder="Give name for device" />
 								</Form.Field>
 							</Table.Cell>
 							<Table.Cell />
@@ -168,7 +168,7 @@ class ManageDevicesForm extends React.Component {
 										children: "Type",
 										htmlFor: "type"
 									}}
-									placeholder="Select room type"
+									placeholder="Select device type"
 									onChange={this.onChange}
 									required
 									value={this.state.type}>
