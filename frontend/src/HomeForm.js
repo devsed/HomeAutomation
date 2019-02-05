@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Select, Button } from 'semantic-ui-react';
 import { connect } from 'react-redux';
-import {withRouter} from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { createHome, updateHome } from './actions/HomeActions';
 
 const homeOptions = [
@@ -53,7 +53,6 @@ class HomeForm extends React.Component {
 		if (event.target.name === "create") {
 			this.props.dispatch(createHome(home));
 		} else {
-			// home.id = this.props.home._id;
 			this.props.dispatch(updateHome(home, this.props.home._id));
 		}
 		// Always redirect to home accordion view
@@ -75,7 +74,7 @@ class HomeForm extends React.Component {
 							control={Select}
 							options={homeOptions}
 							value = {this.state.type === 0 ? "" : this.state.type} // When home is created and form entered 1st time
-							label={{                                               // value must empty to show placeholder corrctly
+							label={{                                               // value must be empty to show placeholder corrctly
 								children: "Type of your house",
 								htmlFor: "type"
 							}}

@@ -1,7 +1,8 @@
 import React from 'react';
 import { Table, Form, Button, Select } from 'semantic-ui-react';
 import { connect } from 'react-redux';
-import { addDevice, deleteDevice, modifyDevice } from './actions/DeviceActions';
+import { withRouter } from "react-router-dom";
+import { getDevices, addDevice, deleteDevice, modifyDevice } from './actions/DeviceActions';
 
 const deviceOptions = [
     { text: 'Light', value: 1 },
@@ -25,19 +26,18 @@ class ManageDevicesForm extends React.Component {
             type: 0,
             parentid: "",
             addViewVisible: false,
-            editViewVisible: false,
-        }
-    }
+            editViewVisible: false
+		}
+		this.currentRoomId = this.props.location.state.roomId;
+	}
 
-    componentDidMount() {
-        if (this.props.isLogged) {
-
-        }
-    }
+	componentDidMount = () => {
+		this.props.dispatch(getDevices(this.currentRoomId));
+	}
 
     delete = (item) => {
         //Room-id because devicelist update needs it
-        this.props.dispatch(deleteDevice(item._id, this.props.activeRoomId))
+        this.props.dispatch(deleteDevice(item._id, this.currentRoomId))
     }
 
     showEditView = (event, data) => {
@@ -58,7 +58,7 @@ class ManageDevicesForm extends React.Component {
 
     submit = (event) => {
         event.preventDefault();
-        let parentid = this.props.activeRoomId;
+        let parentid = this.currentRoomId;
         let item = {
             "type": this.state.type,
             "name": this.state.name,
@@ -72,9 +72,9 @@ class ManageDevicesForm extends React.Component {
         this.setState({ addViewVisible: false })
     }
 
-    update = (event, data) => {
+    update = (event) => {
         event.preventDefault();
-        let parentid = this.props.activeRoomId;
+        let parentid = this.currentRoomId;
 
         let item = {
             "type": this.state.type,
@@ -152,7 +152,7 @@ class ManageDevicesForm extends React.Component {
 										name="name"
 										onChange={this.onChange}
 										value={this.state.name}
-										placeholder="Give name for room" />
+										placeholder="Give name for device" />
 								</Form.Field>
 							</Table.Cell>
 							<Table.Cell />
@@ -168,7 +168,7 @@ class ManageDevicesForm extends React.Component {
 										children: "Type",
 										htmlFor: "type"
 									}}
-									placeholder="Select room type"
+									placeholder="Select device type"
 									onChange={this.onChange}
 									required
 									value={this.state.type}>
@@ -223,9 +223,8 @@ class ManageDevicesForm extends React.Component {
 const mapStateToProps = (state) => {
     return {
         isLogged: state.login.isLogged,
-        devicelist: state.device.devicelist,
-        activeRoomId: state.room.activeId
+        devicelist: state.device.devicelist
     }
 }
 
-export default connect(mapStateToProps)(ManageDevicesForm);
+export default withRouter(connect(mapStateToProps)(ManageDevicesForm));

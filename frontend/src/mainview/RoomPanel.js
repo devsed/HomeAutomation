@@ -1,32 +1,25 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { withRouter } from "react-router-dom";
 import { Button, Icon } from 'semantic-ui-react';
 
-export default class RoomPanel extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			manageDevices: false
-		}
-	}
+class RoomPanel extends React.Component {
 
 	manageDevices = (event) => {
 		event.preventDefault();
-        this.setState({ manageDevices: true });
+		this.props.history.push("/managedevices", { roomId: event.target.name });
     }
 	
 	render() {
 		let room = this.props.room;
 
-		if (this.state.manageDevices) {
-            return <Redirect to='/managedevices' />
-        }
-
 		return (
 			<span color="black">{room.name}<Button basic compact size="small" floated='right'
-				icon onClick={this.manageDevices}>Manage<Icon name="plug" color="black" />
+				icon onClick={this.manageDevices} name={room._id}>Manage<Icon name="plug" color="black" />
 				</Button>
 			</span>
 		)
 	}
 }
+
+export default withRouter(connect()(RoomPanel));

@@ -7,21 +7,41 @@ import DeviceContent from './DeviceContent';
 
 class RoomContent extends React.Component {
 
+	constructor(props) {
+        super(props);
+        this.state = {
+			activeIndex: -1
+		}
+	}
+
 	componentDidMount() {
 		this.props.dispatch(getRooms(this.props.parentId));
 	}
 
+	handleClick = (panelProp) => event => {
+		var index = panelProp.index;
+
+		if (index !== undefined) {
+			var activeIndex  = this.state.activeIndex;
+			var newIndex = activeIndex === index ? -1 : index;
+			this.setState({ activeIndex: newIndex });
+		}
+	}
+
 	render() {
+		var activeIndexNow = this.state.activeIndex;
+
 		return (
 			<Accordion.Accordion panels={
-				this.props.rooms.map((room) => {
+				this.props.rooms.map((room, idx) => {
 					return {
 						key: room._id,
 						title: { content: <RoomPanel room={room} /> },
-						content: { content: <DeviceContent parentId={room._id} /> }
+						content: { content: <DeviceContent parentId={room._id} /> },
+						onTitleClick: this.handleClick({ index: idx })
 					}
 				})
-			}/>
+			} activeIndex={activeIndexNow}/>
 		)
 	}
 }
