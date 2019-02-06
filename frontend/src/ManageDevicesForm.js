@@ -12,9 +12,12 @@ const deviceOptions = [
 ];
 
 function getDeviceName(type) {
-	return deviceOptions.some(function (option) {
-		return type === option.value && option.text;
-	});
+    let text = null;
+    deviceOptions.some(function (option) {
+        text = option.text;
+        return type === option.value && option.text;
+    });
+    return text;
 }
 
 class ManageDevicesForm extends React.Component {
@@ -27,13 +30,21 @@ class ManageDevicesForm extends React.Component {
             parentid: "",
             addViewVisible: false,
             editViewVisible: false
-		}
-		this.currentRoomId = this.props.location.state.roomId;
-	}
+        }
+        this.currentRoomId = this.props.location.state.roomId;
+    }
 
-	componentDidMount = () => {
-		this.props.dispatch(getDevices(this.currentRoomId));
-	}
+    componentDidMount = () => {
+        this.props.dispatch(getDevices(this.currentRoomId));
+    }
+
+    delete_check = (item) => {
+        if (!this.state.editViewVisible) {
+            if (window.confirm('Are you shure?')) this.delete(item);
+        } else {
+            alert("Cancel Edit first");
+        }
+    }
 
     delete = (item) => {
         //Room-id because devicelist update needs it
@@ -41,6 +52,10 @@ class ManageDevicesForm extends React.Component {
     }
 
     showEditView = (event, data) => {
+        if (this.state.addViewVisible) {
+            alert("Cancel Add first");
+            return;
+        }
         this.setState({
             editViewVisible: true,
             name: data.name,
@@ -118,7 +133,7 @@ class ManageDevicesForm extends React.Component {
                     <Table.Cell><Button
                         icon='trash'
                         onClick={() => {
-                            if (window.confirm('Are you shure?')) this.delete(item)
+                            this.delete_check(item);
                         }}
                         name={item._id} />
                     </Table.Cell>
@@ -143,51 +158,51 @@ class ManageDevicesForm extends React.Component {
                             </Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
-					<Table.Body>
-						<Table.Row>
-							<Table.Cell>
-								<Form.Field required>
-									<label htmlFor="name">Name</label>
-									<input type="text"
-										name="name"
-										onChange={this.onChange}
-										value={this.state.name}
-										placeholder="Give name for device" />
-								</Form.Field>
-							</Table.Cell>
-							<Table.Cell />
-							<Table.Cell />
-						</Table.Row>
-						<Table.Row>
-							<Table.Cell>
-								<Form.Field
-									control={Select}
-									options={deviceOptions}
-									name="type"
-									label={{
-										children: "Type",
-										htmlFor: "type"
-									}}
-									placeholder="Select device type"
-									onChange={this.onChange}
-									required
-									value={this.state.type}>
-								</Form.Field>
-							</Table.Cell>
-							<Table.Cell>
-								<Form.Field>
-									<label>&nbsp;</label>
-									<Button icon='save' type="submit"></Button>
-								</Form.Field>
-							</Table.Cell>
-							<Table.Cell>
-								<Form.Field>
-									<label>&nbsp;</label>
-									<Button icon='undo' type="" onClick={this.cancel}></Button>
-								</Form.Field>
-							</Table.Cell>
-						</Table.Row>
-					</Table.Body>
+                    <Table.Body>
+                        <Table.Row>
+                            <Table.Cell>
+                                <Form.Field required>
+                                    <label htmlFor="name">Name</label>
+                                    <input type="text"
+                                        name="name"
+                                        onChange={this.onChange}
+                                        value={this.state.name}
+                                        placeholder="Give name for device" />
+                                </Form.Field>
+                            </Table.Cell>
+                            <Table.Cell />
+                            <Table.Cell />
+                        </Table.Row>
+                        <Table.Row>
+                            <Table.Cell>
+                                <Form.Field
+                                    control={Select}
+                                    options={deviceOptions}
+                                    name="type"
+                                    label={{
+                                        children: "Type",
+                                        htmlFor: "type"
+                                    }}
+                                    placeholder="Select device type"
+                                    onChange={this.onChange}
+                                    required
+                                    value={this.state.type}>
+                                </Form.Field>
+                            </Table.Cell>
+                            <Table.Cell>
+                                <Form.Field>
+                                    <label>&nbsp;</label>
+                                    <Button icon='save' type="submit"></Button>
+                                </Form.Field>
+                            </Table.Cell>
+                            <Table.Cell>
+                                <Form.Field>
+                                    <label>&nbsp;</label>
+                                    <Button icon='undo' type="" onClick={this.cancel}></Button>
+                                </Form.Field>
+                            </Table.Cell>
+                        </Table.Row>
+                    </Table.Body>
                 </Table>
                 <br />
             </Form>
