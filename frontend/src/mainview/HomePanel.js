@@ -6,19 +6,19 @@ import RoomContent from './RoomContent';
 
 class HomePanel extends React.Component {
 
-    editHome = (event) => {
+	editHome = (event) => {
 		event.preventDefault();
 		this.props.history.push("/home/editing");
 	}
-	
-    manageRooms = (event) => {
+
+	manageRooms = (event) => {
 		event.preventDefault();
-		this.props.history.push("/managerooms");
-    }
-	
+		this.props.history.push("/managerooms", { homeName: event.target.name });
+	}
+
 	render() {
 		let home = this.props.home;
-		
+
 		return (
 			<span>{home.name}
 				<ButtonGroup floated='right'>
@@ -26,7 +26,7 @@ class HomePanel extends React.Component {
 						onClick={this.editHome}>Edit <Icon name="home" />
 					</Button>
 					<Button compact icon
-						onClick={this.manageRooms}>Manage <Icon name="home" />
+						onClick={this.manageRooms} name={home.name}>Manage <Icon name="home" />
 					</Button>
 				</ButtonGroup>
 				<RoomContent parentId={home._id} />

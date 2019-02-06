@@ -32,6 +32,7 @@ class ManageDevicesForm extends React.Component {
             editViewVisible: false
         }
         this.currentRoomId = this.props.location.state.roomId;
+        this.currentRoomName = this.props.location.state.roomName;
     }
 
     componentDidMount = () => {
@@ -212,7 +213,7 @@ class ManageDevicesForm extends React.Component {
         return (
             <div className="ui one column stackable center aligned page grid">
                 <div className="column six wide">
-                    <h3>Manage devices</h3>
+                    <h3>Manage <strong style={{color:'grey'}}>{' ' + this.currentRoomName + ' '}</strong>devices</h3>
                     <Table selectable>
                         <Table.Header>
                             <Table.Row >

@@ -2,6 +2,7 @@ import React from 'react';
 import { Table, Form, Button, Select } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { addRoom, deleteRoom, modifyRoom } from './actions/RoomActions';
+import { withRouter } from "react-router-dom";
 
 const roomOptions = [
     { text: 'Kitchen', value: 1 },
@@ -32,6 +33,7 @@ class ManageRoomsForm extends React.Component {
             addViewVisible: false,
             editViewVisible: false,
         }
+        this.currentHomeName = this.props.location.state.homeName;
     }
 
     componentDidMount() {
@@ -234,7 +236,7 @@ class ManageRoomsForm extends React.Component {
         return (
             <div className="ui one column stackable center aligned page grid">
                 <div className="column six wide">
-                    <h3>Manage rooms</h3>
+                    <h3>Manage<strong style={{color:'grey'}}>{' '+this.currentHomeName+' '}</strong> rooms</h3>
                     <Table selectable>
                         <Table.Header>
                             <Table.Row >
@@ -265,4 +267,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(ManageRoomsForm);
+export default withRouter( connect(mapStateToProps)(ManageRoomsForm));

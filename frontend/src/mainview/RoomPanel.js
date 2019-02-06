@@ -7,7 +7,7 @@ class RoomPanel extends React.Component {
 
 	manageDevices = (event) => {
 		event.preventDefault();
-		this.props.history.push("/managedevices", { roomId: event.target.name });
+		this.props.history.push("/managedevices", { roomId: event.target.id, roomName:event.target.name});
     }
 	
 	render() {
@@ -15,7 +15,7 @@ class RoomPanel extends React.Component {
 
 		return (
 			<span color="black">{room.name}<Button basic compact size="small" floated='right'
-				icon onClick={this.manageDevices} name={room._id}>Manage<Icon name="plug" color="black" />
+				icon onClick={this.manageDevices} id={room._id} name={room.name}>Manage<Icon name="plug" color="black" />
 				</Button>
 			</span>
 		)
