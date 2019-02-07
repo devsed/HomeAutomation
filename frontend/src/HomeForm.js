@@ -19,8 +19,8 @@ class HomeForm extends React.Component {
 		this.state = {
 			name: this.editableHome ? this.props.home.name : "",
 			type: this.editableHome ? this.props.home.type : 0,
-			serviceAddress: this.editableHome ? this.props.home.proxySettings.address : "",
-			serviceUsername: this.editableHome ? this.props.home.proxySettings.username : "",
+			serviceAddress: this.editableHome ? this.props.home.proxySettings.addr : "",
+			serviceUsername: this.editableHome ? this.props.home.proxySettings.user : "",
 			servicePassword: this.editableHome ? this.props.home.proxySettings.password : ""
 		}
 	}
@@ -44,8 +44,8 @@ class HomeForm extends React.Component {
 			"name": this.state.name,
 			"type": this.state.type,
 			"proxySettings": {
-				"address": this.state.serviceAddress,
-				"username": this.state.serviceUsername,
+				"addr": this.state.serviceAddress,
+				"user": this.state.serviceUsername,
 				"password": this.state.servicePassword
 			}
 		}
