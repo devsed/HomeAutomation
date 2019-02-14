@@ -106,7 +106,7 @@ class SmartHomeRoot {
     }
     DeleteChildren(req, res, next) {
         console.log("deleteChildren:" + req.params.id);
-        this.childModel.delete({ "parentid": req.params.id }, function (err) {
+        this.childModel.deleteMany({ "parentid": req.params.id }, function (err) {
             if (err) {
                 return res.status(404).json({ "message": "not found" });
             }

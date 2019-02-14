@@ -10,12 +10,17 @@ class FunctionContent extends React.Component {
 	}
 
 	render() {
-		let items =	this.props.functions.map((functio, idx, array) => {
+		let items = this.props.functions.map((functio, idx, array) => {
 			return (
-				idx % 2 === 0 && <span><Grid.Row>
-					<Grid.Column>{functio.name}<Icon /></Grid.Column>
-					{idx === array.length - 1 || idx % 2 !== 0}
-				 </Grid.Row></span>
+//				idx % 2 === 0 &&
+				<span>
+					<Grid.Row>
+						<Grid.Column>{functio.name}<Icon /></Grid.Column>
+						{idx === array.length - 1 || idx % 2 === 0 ? 
+						<div></div>:
+						<Grid.Column>{functio.name}<Icon /></Grid.Column>}
+					</Grid.Row>
+				</span>
 			)
 		})
 

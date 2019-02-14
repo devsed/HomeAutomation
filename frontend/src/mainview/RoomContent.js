@@ -4,6 +4,7 @@ import { Accordion } from 'semantic-ui-react';
 import { getRooms } from '../actions/RoomActions';
 import RoomPanel from './RoomPanel';
 import DeviceContent from './DeviceContent';
+import { getDevices } from '../actions/DeviceActions';
 
 class RoomContent extends React.Component {
 
@@ -26,6 +27,7 @@ class RoomContent extends React.Component {
 			var newIndex = activeIndex === index ? -1 : index;
 			this.setState({ activeIndex: newIndex });
 		}
+		this.props.dispatch(getDevices(panelProp.activeRoomId));
 	}
 
 	render() {
@@ -38,7 +40,7 @@ class RoomContent extends React.Component {
 						key: room._id,
 						title: { content: <RoomPanel room={room} /> },
 						content: { content: <DeviceContent parentId={room._id} /> },
-						onTitleClick: this.handleClick({ index: idx })
+						onTitleClick: this.handleClick({ index: idx, activeRoomId:room._id })
 					}
 				})
 			} activeIndex={activeIndexNow}/>
