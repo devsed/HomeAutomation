@@ -75,8 +75,8 @@ passport.use("local-login", new localStrategy({
 			let token = createToken();
 			req.session.token = token;
 			req.session.username = username;
-			req.session.userId = user._id;
-			req.session.homeId = user.homeId;
+			req.session.userId = user._id;    // Used to delete home when finding current user for that home fails during creating home
+			req.session.homeId = user.homeId; // Joins user with existing home
 			return done(null,user)
 		}
 		return done(null,false,"Wrong credentials");
@@ -93,9 +93,8 @@ function isPasswordValid(pw,hash) {
 
 app.post("/login", passport.authenticate("local-login",{failureRedirect:"/"}),
 	function(req,res) {
-		console.log("currentUserId:"+ req.session.userId);
 		return res.status(200).json({"token":req.session.token,
-			"userId":req.session.userId, "userHomeId":req.session.homeId});
+			"userHomeId":req.session.homeId});
 });
 
 app.post("/logout", function(req,res) {
