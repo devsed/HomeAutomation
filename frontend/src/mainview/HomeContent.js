@@ -20,7 +20,7 @@ class HomeContent extends React.Component {
 
 		return (
 			homeLoaded ? (
-				<div className="ui one column stackable center aligned page grid">
+				<div className="ui one column stackable center aligned page grid" >
 					<div className="column seven wide left aligned">
 						<Accordion defaultActiveIndex={0} panels={homePanel} styled />
 					</div>

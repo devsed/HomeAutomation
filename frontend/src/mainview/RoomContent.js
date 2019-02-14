@@ -24,10 +24,10 @@ class RoomContent extends React.Component {
 		var parentId = panelProps.parentId;
 
 		if (index !== undefined) {
-			this.launchChild(parentId);
 			var activeIndex  = this.state.activeIndex;
 			var newIndex = activeIndex === index ? -1 : index;
 			this.setState({ activeIndex: newIndex });
+			this.launchChild(parentId);
 		}
 	}
 

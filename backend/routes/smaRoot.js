@@ -8,7 +8,21 @@ class SmartHomeRoot {
         this.model = null;
         this.childModel = null;
         this.parentId = null;
-    }
+	}
+	ProxyUrl(settings) {
+        var plen = 0;
+        if (settings.user === "" && settings.password === "") {
+            return encodeURI(settings.addr)
+        }
+        if (settings.addr.startsWith("https://"))
+            plen = "https://".length;
+        else if (settings.addr.startsWith("http://"))
+            plen = "http://".length;
+        const protocol = settings.addr.substring(0, plen);
+        const url = settings.addr.substring(plen);
+        const user = encodeURI(settings.user).replace("@", "%40")
+        return protocol + user + ":" + encodeURI(settings.password) + "@" + encodeURI(url);
+	}
     Items(req, res, next) {
         this.model.find(function (err, items) {
             if (err || !items) {
@@ -91,7 +105,7 @@ class SmartHomeRoot {
     }
     DeleteChildren(req, res, next) {
         console.log("deleteChildren:" + req.params.id);
-        this.childModel.delete({ "parentid": req.params.id }, function (err) {
+        this.childModel.deleteMany({ "parentid": req.params.id }, function (err) {
             if (err) {
                 return res.status(404).json({ "message": "not found" });
             }

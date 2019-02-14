@@ -23,13 +23,13 @@ export const createHome = (home) => {
 				resp.json().then((data) => {
 					dispatch(createHomeSuccess(data));
 				}).catch((error) => {
-					dispatch(createHomeFailed("Problem creating home: "+error));
+					dispatch(createHomeFailed(home, "Problem creating home: "+error));
 				})
 			} else {
-				dispatch(createHomeFailed("A home has already created: "+resp.status));
+				dispatch(createHomeFailed(home, "Problem creating home: "+resp.status));
 			}
 		}).catch((error) => {
-			dispatch(createHomeFailed("Server responded with error: "+error));
+			dispatch(createHomeFailed(home, "Server responded with error: "+error));
 		});
 	}
 }
@@ -103,9 +103,10 @@ const createHomeSuccess = (home) => {
 	}
 }
 
-const createHomeFailed = (error) => {
+const createHomeFailed = (home, error) => {
 	return {
 		type:CREATE_HOME_FAILED,
+		home:home,
 		error:error
 	}
 }

@@ -14,16 +14,23 @@ class DeviceContent extends React.Component {
 	}
 
 	componentDidMount() {
-		this.props.dispatch(getDevices(this.props.parentId));
+		this.props.setLaunch(this.getContent.bind(this));
 	}
 
-	handleClick = (panelProp) => event => {
-		var index = panelProp.index;
+	getContent = (parentId) => {
+		this.props.dispatch(getDevices(parentId));
+	}
+
+	handleClick = (panelProps) => event => {
+		event.preventDefault();
+		var index = panelProps.index;
+		var parentId = panelProps.parentId;
 
 		if (index !== undefined) {
 			var activeIndex  = this.state.activeIndex;
 			var newIndex = activeIndex === index ? -1 : index;
 			this.setState({ activeIndex: newIndex });
+			this.launchChild(parentId);
 		}
 	}
 
@@ -36,8 +43,9 @@ class DeviceContent extends React.Component {
 					return {
 						key: device._id,
 						title: device.name,
-						content: { content: <FunctionContent parentId={device._id} /> },
-						onTitleClick: this.handleClick({ index: idx })
+						content: { content: <FunctionContent
+							setLaunch={launch => this.launchChild = launch} /> },
+						onTitleClick: this.handleClick({ index: idx, parentId: device._id })
 					}
 				})
 			} activeIndex={activeIndexNow} />

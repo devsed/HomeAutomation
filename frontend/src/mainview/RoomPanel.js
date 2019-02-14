@@ -1,22 +1,20 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from "react-router-dom";
-import { Button, Icon } from 'semantic-ui-react';
+import { Button } from 'semantic-ui-react';
 
 class RoomPanel extends React.Component {
 
-	manageDevices = (event) => {
-		event.preventDefault();
-		this.props.history.push("/managedevices", { roomId: event.target.id, roomName:event.target.name});
+	manageDevices = (event, data) => {
+		this.props.history.push("/managedevices", { roomId: data.value, roomName: data.name});
     }
 	
 	render() {
 		let room = this.props.room;
 
 		return (
-			<span color="black">{room.name}<Button basic compact size="small" floated='right'
-				icon onClick={this.manageDevices} id={room._id} name={room.name}>Manage<Icon name="plug" color="black" />
-				</Button>
+			<span>{room.name}<Button compact size='small' floated='right' icon='plug'
+				onClick={this.manageDevices} value={room._id} name={room.name}></Button>
 			</span>
 		)
 	}

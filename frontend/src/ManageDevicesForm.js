@@ -2,11 +2,12 @@ import React from 'react';
 import { Table, Form, Button, Select } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { withRouter } from "react-router-dom";
-import { getDevices, addDevice, deleteDevice, modifyDevice } from './actions/DeviceActions';
+import { getDevices, addDevice, deleteDevice, modifyDevice, ACTIVE_DEVICE_CHANGED, changeActiveDeviceId } from './actions/DeviceActions';
+import { getFunctions } from './actions/FunctionActions';
 
 const deviceOptions = [
-    { text: 'Light', value: 1 },
-    { text: 'Switch', value: 2 },
+    { text: 'Switch', value: 1 },
+    { text: 'Dimmer', value: 2 },
     { text: 'Heating', value: 3 },
     { text: 'Camera', value: 4 }
 ];
@@ -29,7 +30,10 @@ class ManageDevicesForm extends React.Component {
             type: 0,
             parentid: "",
             addViewVisible: false,
-            editViewVisible: false
+            editViewVisible: false,
+            functionRows: false,
+            fname: "",
+            fname2: ""
         }
         this.currentRoomId = this.props.location.state.roomId;
         this.currentRoomName = this.props.location.state.roomName;
@@ -37,6 +41,34 @@ class ManageDevicesForm extends React.Component {
 
     componentDidMount = () => {
         this.props.dispatch(getDevices(this.currentRoomId));
+    }
+
+    getItemsSyncronous = (parent_id, itemType) => {
+        let getObject = {
+            method: "GET",
+            mode: "cors",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }
+
+        const request = async () => {
+            const response = await fetch("/api/" + itemType + "/" + parent_id, getObject);
+            let json = await response.json();
+            console.log(json);
+            let fNames = [];
+            if (json.length > 0) {
+                json.map((item, idx) => {
+                    fNames[idx] = item.name;
+                })
+            }
+            this.setState({
+                fname: fNames[0],
+                fname2: fNames[1]
+            });
+        }
+        request();
     }
 
     delete_check = (item) => {
@@ -57,11 +89,19 @@ class ManageDevicesForm extends React.Component {
             alert("Cancel Add first");
             return;
         }
+        //this.props.dispatch(getFunctions(data._id));
+        this.setState({
+            fname: "",
+            fname2: ""
+        })
+        this.getItemsSyncronous(data._id, "functions");
+
         this.setState({
             editViewVisible: true,
             name: data.name,
             type: data.type,
-            _id: data._id
+            _id: data._id,
+            functionRows: data.type === 2 ? true : false
         });
     }
 
@@ -75,17 +115,23 @@ class ManageDevicesForm extends React.Component {
     submit = (event) => {
         event.preventDefault();
         let parentid = this.currentRoomId;
-        let item = {
+        let ditem = {
             "type": this.state.type,
             "name": this.state.name,
-            "parentid": parentid
+            "parentid": parentid,
+        }
+        let fitem = {
+            "name": this.state.fname,
+        }
+        let fitem2 = {
+            "name": this.state.fname2
         }
         if (this.state.name.length === 0 || this.state.type < 1) {
             alert("Required fields missing")
             return;
         }
-        this.props.dispatch(addDevice(item));
-        this.setState({ addViewVisible: false })
+        this.props.dispatch(addDevice(ditem, fitem, fitem2));
+        this.setState({ addViewVisible: false, ditem: null, fitem: null, fitem2: null })
     }
 
     update = (event) => {
@@ -98,11 +144,17 @@ class ManageDevicesForm extends React.Component {
             "id": this.state._id,
             "parentid": parentid
         }
+        let fitem = {
+            "name": this.state.fname,
+        }
+        let fitem2 = {
+            "name": this.state.fname2
+        }
         if (this.state.name.length === 0 || this.state.type < 1) {
             alert("Required fields missing")
             return;
         }
-        this.props.dispatch(modifyDevice(item, item.id));
+        this.props.dispatch(modifyDevice(item, item.id, fitem, fitem2));
         this.setState({
             addViewVisible: false,
             editViewVisible: false
@@ -123,30 +175,57 @@ class ManageDevicesForm extends React.Component {
         });
     }
 
+    onTypeChange = (event, data) => {
+        let state = {}
+        state[data === undefined ? event.target.fname : data.name] =
+            data === undefined ? event.target.value : data.value;
+        this.setState(state);
+
+        if (state.type === 2) {
+            this.setState({ functionRows: true });
+        }
+        else {
+            this.setState({ functionRows: false });
+        }
+    }
+
+
     render() {
         let items = [];
 
+        let functionRow =   //Possible second function row
+            <Table.Row>
+                <Table.Cell>
+                    <Form.Field required>
+                        <label htmlFor="fname2" />
+                        <input type="text"
+                            name="fname2"
+                            onChange={this.onChange}
+                            value={this.state.fname2}
+                            placeholder="Give function ID" />
+                    </Form.Field>
+                </Table.Cell>
+            </Table.Row>
+
         items = this.props.devicelist.map((item) => {
-            if (item._id !== 'device_999') { //Leave out manage device button
-                return <Table.Row key={item._id}>
-                    <Table.Cell >{item.name}</Table.Cell>
-                    {<Table.Cell ><aside>{getDeviceName(item.type)}</aside></Table.Cell>}
-                    <Table.Cell><Button
-                        icon='trash'
-                        onClick={() => {
-                            this.delete_check(item);
-                        }}
-                        name={item._id} />
-                    </Table.Cell>
-                    <Table.Cell><Button
-                        icon='edit'
-                        onClick={this.showEditView}
-                        type={item.type}
-                        name={item.name}
-                        _id={item._id} />
-                    </Table.Cell>
-                </Table.Row>
-            } else { return <Table.Row></Table.Row> }
+            return <Table.Row key={item._id}>
+                <Table.Cell >{item.name}</Table.Cell>
+                {<Table.Cell ><aside>{getDeviceName(item.type)}</aside></Table.Cell>}
+                <Table.Cell><Button
+                    icon='trash'
+                    onClick={() => {
+                        this.delete_check(item);
+                    }}
+                    name={item._id} />
+                </Table.Cell>
+                <Table.Cell><Button
+                    icon='edit'
+                    onClick={this.showEditView}
+                    type={item.type}
+                    name={item.name}
+                    _id={item._id} />
+                </Table.Cell>
+            </Table.Row>
         })
 
         let addBlock =
@@ -185,7 +264,7 @@ class ManageDevicesForm extends React.Component {
                                         htmlFor: "type"
                                     }}
                                     placeholder="Select device type"
-                                    onChange={this.onChange}
+                                    onChange={this.onTypeChange}
                                     required
                                     value={this.state.type}>
                                 </Form.Field>
@@ -203,6 +282,19 @@ class ManageDevicesForm extends React.Component {
                                 </Form.Field>
                             </Table.Cell>
                         </Table.Row>
+                        <Table.Row>
+                            <Table.Cell>
+                                <Form.Field required>
+                                    <label htmlFor="fname">Function Id 1</label>
+                                    <input type="text"
+                                        name="fname"
+                                        onChange={this.onChange}
+                                        value={this.state.fname}
+                                        placeholder="Give function ID" />
+                                </Form.Field>
+                            </Table.Cell>
+                        </Table.Row>
+                        {this.state.functionRows === true ? <div>{functionRow}</div> : <div></div>}
                     </Table.Body>
                 </Table>
                 <br />
@@ -210,10 +302,11 @@ class ManageDevicesForm extends React.Component {
 
         let addButton = <Button onClick={this.showAddView} icon='plus' />
 
+
         return (
             <div className="ui one column stackable center aligned page grid">
                 <div className="column six wide">
-                    <h3>Manage <strong style={{color:'grey'}}>{' ' + this.currentRoomName + ' '}</strong>devices</h3>
+                    <h3>Manage <strong style={{ color: 'grey' }}>{' ' + this.currentRoomName + ' '}</strong>devices</h3>
                     <Table selectable>
                         <Table.Header>
                             <Table.Row >
@@ -239,7 +332,9 @@ class ManageDevicesForm extends React.Component {
 const mapStateToProps = (state) => {
     return {
         isLogged: state.login.isLogged,
-        devicelist: state.device.devicelist
+        devicelist: state.device.devicelist,
+        activeId: state.device.activeId,
+        functionlist: state.function.functionlist
     }
 }
 

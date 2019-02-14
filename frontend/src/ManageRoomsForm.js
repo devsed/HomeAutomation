@@ -150,26 +150,24 @@ class ManageRoomsForm extends React.Component {
         let items = [];
 
         items = this.props.roomlist.map((item) => {
-            if (item._id !== 'room_999') { //Leave out manage room button
-                return <Table.Row key={item._id}>
-                    <Table.Cell >{item.name}</Table.Cell>
-                    <Table.Cell ><aside>{getRoomName(item.type)}</aside></Table.Cell>
-                    <Table.Cell><Button
-                        icon='trash'
-                        onClick={() => {
-                            this.delete_check(item)
-                        }}
-                        name={item._id} />
-                    </Table.Cell>
-                    <Table.Cell><Button
-                        icon='edit'
-                        onClick={this.showEditView}
-                        type={item.type}
-                        name={item.name}
-                        _id={item._id} />
-                    </Table.Cell>
-                </Table.Row>
-            } else { return <Table.Row></Table.Row> }
+            return <Table.Row key={item._id}>
+                <Table.Cell >{item.name}</Table.Cell>
+                <Table.Cell ><aside>{getRoomName(item.type)}</aside></Table.Cell>
+                <Table.Cell><Button
+                    icon='trash'
+                    onClick={() => {
+                        this.delete_check(item)
+                    }}
+                    name={item._id} />
+                </Table.Cell>
+                <Table.Cell><Button
+                    icon='edit'
+                    onClick={this.showEditView}
+                    type={item.type}
+                    name={item.name}
+                    _id={item._id} />
+                </Table.Cell>
+            </Table.Row>
         })
 
         let addBlock =
@@ -236,7 +234,7 @@ class ManageRoomsForm extends React.Component {
         return (
             <div className="ui one column stackable center aligned page grid">
                 <div className="column six wide">
-                    <h3>Manage<strong style={{color:'grey'}}>{' '+this.currentHomeName+' '}</strong> rooms</h3>
+                    <h3>Manage<strong style={{ color: 'grey' }}>{' ' + this.currentHomeName + ' '}</strong> rooms</h3>
                     <Table selectable>
                         <Table.Header>
                             <Table.Row >
@@ -267,4 +265,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default withRouter( connect(mapStateToProps)(ManageRoomsForm));
+export default withRouter(connect(mapStateToProps)(ManageRoomsForm));

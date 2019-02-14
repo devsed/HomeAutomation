@@ -66,11 +66,12 @@ const homeReducer = (state = initialState, action) => {
 			
         case CREATE_HOME_FAILED:
             tempState = {
-                ...state,
+				...state,
+				home: action.home,
                 error: action.error,
                 loading: false
             }
-            saveToStorage(false, null, action.error);
+            saveToStorage(false, action.home, action.error);
 			return tempState;
 			
 		case GET_HOME_SUCCESS:

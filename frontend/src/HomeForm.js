@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Select, Button } from 'semantic-ui-react';
+import { Form, Select, Button, Grid, Checkbox } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { withRouter } from "react-router-dom";
 import { createHome, updateHome } from './actions/HomeActions';
@@ -11,24 +11,35 @@ const homeOptions = [
 ];
 
 class HomeForm extends React.Component {
-	editableHome = this.props.home !== null ? true : false;
 
 	constructor(props) {
 		super(props);
-
 		this.state = {
-			name: this.editableHome ? this.props.home.name : "",
-			type: this.editableHome ? this.props.home.type : 0,
-			serviceAddress: this.editableHome ? this.props.home.proxySettings.addr : "",
-			serviceUsername: this.editableHome ? this.props.home.proxySettings.user : "",
-			servicePassword: this.editableHome ? this.props.home.proxySettings.password : ""
+			name: this.props.homeExists ? this.props.home.name : "",
+			type: this.props.homeExists ? this.props.home.type : 0,
+			serviceAddress: this.props.homeExists ? this.props.home.proxySettings.addr : "",
+			serviceUsername: this.props.homeExists ? this.props.home.proxySettings.user : "",
+			servicePassword: this.props.homeExists ? this.props.home.proxySettings.password : "",
+			testServiceSettings: true
 		}
 	}
+
+	componentWillReceiveProps(nextProps) {
+		this.setState({
+			name: nextProps.home.name,
+			type: nextProps.home.type,
+			serviceAddress: nextProps.home.proxySettings.addr,
+			serviceUsername: nextProps.home.proxySettings.user,
+			servicePassword: nextProps.home.proxySettings.password,
+			testServiceSettings: nextProps.home.proxySettings.areTested
+		});
+	  }
 
 	onChange = (event, data) => {
 		let state = {};
 		state[data === undefined ? event.target.name : data.name] =
-			data === undefined ? event.target.value : data.value;
+			data === undefined ? event.target.value :
+				 data.type !== "checkbox" ? data.value : data.checked;
 		this.setState(state);
 	}
 
@@ -46,7 +57,8 @@ class HomeForm extends React.Component {
 			"proxySettings": {
 				"addr": this.state.serviceAddress,
 				"user": this.state.serviceUsername,
-				"password": this.state.servicePassword
+				"password": this.state.servicePassword,
+				"areTested": this.state.testServiceSettings
 			}
 		}
 
@@ -63,7 +75,7 @@ class HomeForm extends React.Component {
 		return (
 			<div className="ui one column stackable center aligned page grid">
 				<div className="column six wide">
-					<h2 style={{ height: 65 }} >{this.editableHome ? "Update Home" : "Create Home"}</h2>
+					<h2 style={{ height: 65 }} >{this.props.homeExists ? "Update Home" : "Create Home"}</h2>
 					<Form>
 						<Form.Field required>
 							<label htmlFor="name">Home name</label>
@@ -95,8 +107,17 @@ class HomeForm extends React.Component {
 							<input type="password" name="servicePassword" value={this.state.servicePassword}
 								onChange={this.onChange} placeholder="Password for smart home service" required />
 						</Form.Field>
-						<Button onClick={this.submit} name={this.editableHome ? "update" : "create"}
-							>{this.editableHome ? "Update" : "Create"}</Button>
+						<Grid columns={ this.props.homeExists ? '1' : '2' }><Grid.Row>
+							<Grid.Column>
+								<Button name={this.props.homeExists ? "update" : "create"} onClick={this.submit}
+									>{this.props.home ? "Update" : "Create"}</Button>
+							</Grid.Column>
+							{ !this.props.homeExists && 
+							<Grid.Column>
+								<Checkbox label="Test service settings" name="testServiceSettings"
+									checked={this.state.testServiceSettings} onClick={this.onChange} />
+							</Grid.Column> }
+						</Grid.Row></Grid>
 					</Form>
 				</div>
 			</div>
