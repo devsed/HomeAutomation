@@ -8,7 +8,7 @@ import DeviceContent from './DeviceContent';
 class RoomContent extends React.Component {
 
 	constructor(props) {
-        super(props);
+		super(props);
         this.state = {
 			activeIndex: -1
 		}
@@ -18,10 +18,13 @@ class RoomContent extends React.Component {
 		this.props.dispatch(getRooms(this.props.parentId));
 	}
 
-	handleClick = (panelProp) => event => {
-		var index = panelProp.index;
+	handleClick = (panelProps) => event => {
+		event.preventDefault();
+		var index = panelProps.index;
+		var parentId = panelProps.parentId;
 
 		if (index !== undefined) {
+			this.launchChild(parentId);
 			var activeIndex  = this.state.activeIndex;
 			var newIndex = activeIndex === index ? -1 : index;
 			this.setState({ activeIndex: newIndex });
@@ -37,8 +40,9 @@ class RoomContent extends React.Component {
 					return {
 						key: room._id,
 						title: { content: <RoomPanel room={room} /> },
-						content: { content: <DeviceContent parentId={room._id} /> },
-						onTitleClick: this.handleClick({ index: idx })
+						content: { content: <DeviceContent 
+							setLaunch={launch => this.launchChild = launch} /> },
+						onTitleClick: this.handleClick({ index: idx, parentId: room._id })
 					}
 				})
 			} activeIndex={activeIndexNow}/>

@@ -6,21 +6,24 @@ import { getFunctions } from '../actions/FunctionActions';
 class FunctionContent extends React.Component {
 
 	componentDidMount() {
-		this.props.dispatch(getFunctions(this.props.parentId));
+		this.props.setLaunch(this.getContent.bind(this));
+	}
+
+	getContent = (parentId) => {
+		this.props.dispatch(getFunctions(parentId));
 	}
 
 	render() {
 		let items =	this.props.functions.map((functio, idx, array) => {
 			return (
-				idx % 2 === 0 && <span><Grid.Row>
-					<Grid.Column>{functio.name}<Icon /></Grid.Column>
-					{idx === array.length - 1 || idx % 2 !== 0}
-				 </Grid.Row></span>
+				idx % 2 === 0 &&<Grid.Row>
+					<Grid.Column>{functio.name}<Icon /></Grid.Column>}
+				{idx === array.length - 1 || idx % 2 !== 0}</Grid.Row>
 			)
 		})
 
 		return (
-			<Grid columns='equal'> {items} </Grid>
+			<Grid columns='2'>{items}</Grid>
 		)
 	}
 }
