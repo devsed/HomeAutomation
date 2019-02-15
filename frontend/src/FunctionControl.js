@@ -1,51 +1,44 @@
-import _ from 'lodash'
 import React, { Component } from 'react'
 import { Checkbox, Segment } from 'semantic-ui-react'
 
-const panels = _.times(15, i => ({
-  key: `panel-${i}`,
-}))
-
-const Switch = () => <Checkbox toggle />
-
 export default class FunctionControl extends Component {
-  state = { statusValue: 0 };
+  state = {
+    sliderValue: 0,
+    checkValue: false
+  };
 
-  handleSliderChange = e => this.setState({ statusValue: Number(e.target.value) })
+  handleSliderChange = e => this.setState({
+    sliderValue: Number(e.target.value)
+  });
+
+  handleCheckboxValue = e => {
+    this.setState({
+      checkValue: !this.state.checkValue,
+    })
+    alert("Check value:" + !this.state.checkValue)
+  }
+
+  handleSliderLeave = e => {
+    alert("Slider value is:" + this.state.sliderValue)
+  }
 
   render() {
-    const device = this.props.device;
-    const type = device.type;
-    const { statusValue } = this.state;
+    let { sliderValue } = this.state;
 
-//    const Switch = () => <Checkbox toggle />
-
-    const Control = () =>
-    type === 0 ? <Switch /> : 
-
-      <Segment secondary>
-        <div>Brightness: {statusValue}</div>
-        <input
-          type='range'
-          min='-1'
-          max={panels.length - 1}
-          value={statusValue}
-          onChange={this.handleSliderChange}
-        />
-      </Segment>
-
-    return ( <Control/>
-      //      type === 0 ? <div><Switch /></div> : <div><Dimmer /></div>
-/*      <Segment secondary>
-        <div>Brightness: {statusValue}</div>
-        <input
-          type='range'
-          min='-1'
-          max={panels.length - 1}
-          value={statusValue}
-          onChange={this.handleSliderChange}
-        />
-      </Segment>*/
+    return (
+      this.props.props.type === 1 ?
+        (<Checkbox toggle onChange={this.handleCheckboxValue} checked={this.state.checkValue} />) :
+        (<Segment secondary>
+          <div>Brightness: {sliderValue}</div>
+          <input
+            type='range'
+            min='0'
+            max='10'
+            value={sliderValue}
+            onChange={this.handleSliderChange}
+            onMouseUp={this.handleSliderLeave}
+          />
+        </Segment>)
     )
   }
 }

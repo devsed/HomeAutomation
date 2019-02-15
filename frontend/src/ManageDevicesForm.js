@@ -2,8 +2,7 @@ import React from 'react';
 import { Table, Form, Button, Select } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { withRouter } from "react-router-dom";
-import { getDevices, addDevice, deleteDevice, modifyDevice, ACTIVE_DEVICE_CHANGED, changeActiveDeviceId } from './actions/DeviceActions';
-import { getFunctions } from './actions/FunctionActions';
+import { getDevices, addDevice, deleteDevice, modifyDevice } from './actions/DeviceActions';
 
 const deviceOptions = [
     { text: 'Switch', value: 1 },
@@ -32,8 +31,8 @@ class ManageDevicesForm extends React.Component {
             addViewVisible: false,
             editViewVisible: false,
             functionRows: false,
-            fname: "",
-            fname2: ""
+            functionId: "",
+            functionId2: ""
         }
         this.currentRoomId = this.props.location.state.roomId;
         this.currentRoomName = this.props.location.state.roomName;
@@ -57,15 +56,15 @@ class ManageDevicesForm extends React.Component {
             const response = await fetch("/api/" + itemType + "/" + parent_id, getObject);
             let json = await response.json();
             console.log(json);
-            let fNames = [];
+            let functionIds = [];
             if (json.length > 0) {
                 json.map((item, idx) => {
-                    fNames[idx] = item.name;
+                    return functionIds[idx] = item.functionid;
                 })
             }
             this.setState({
-                fname: fNames[0],
-                fname2: fNames[1]
+                functionId: functionIds[0],
+                functionId2: functionIds[1]
             });
         }
         request();
@@ -91,8 +90,8 @@ class ManageDevicesForm extends React.Component {
         }
         //this.props.dispatch(getFunctions(data._id));
         this.setState({
-            fname: "",
-            fname2: ""
+            functionId: "",
+            functionId2: ""
         })
         this.getItemsSyncronous(data._id, "functions");
 
@@ -121,10 +120,12 @@ class ManageDevicesForm extends React.Component {
             "parentid": parentid,
         }
         let fitem = {
-            "name": this.state.fname,
+            "functionid": this.state.functionId,
+            "type":1
         }
         let fitem2 = {
-            "name": this.state.fname2
+            "functionid": this.state.functionId2,
+            "type":2
         }
         if (this.state.name.length === 0 || this.state.type < 1) {
             alert("Required fields missing")
@@ -145,10 +146,12 @@ class ManageDevicesForm extends React.Component {
             "parentid": parentid
         }
         let fitem = {
-            "name": this.state.fname,
+            "functionid": this.state.functionId,
+            "type":1
         }
         let fitem2 = {
-            "name": this.state.fname2
+            "functionid": this.state.functionId2,
+            "type":2
         }
         if (this.state.name.length === 0 || this.state.type < 1) {
             alert("Required fields missing")
@@ -177,7 +180,7 @@ class ManageDevicesForm extends React.Component {
 
     onTypeChange = (event, data) => {
         let state = {}
-        state[data === undefined ? event.target.fname : data.name] =
+        state[data === undefined ? event.target.functionId : data.name] =
             data === undefined ? event.target.value : data.value;
         this.setState(state);
 
@@ -196,12 +199,12 @@ class ManageDevicesForm extends React.Component {
         let functionRow =   //Possible second function row
             <Table.Row>
                 <Table.Cell>
-                    <Form.Field required>
-                        <label htmlFor="fname2" />
+                    <Form.Field>
+                        <label htmlFor="functionId2" />
                         <input type="text"
-                            name="fname2"
+                            name="functionId2"
                             onChange={this.onChange}
-                            value={this.state.fname2}
+                            value={this.state.functionId2}
                             placeholder="Give function ID" />
                     </Form.Field>
                 </Table.Cell>
@@ -284,12 +287,12 @@ class ManageDevicesForm extends React.Component {
                         </Table.Row>
                         <Table.Row>
                             <Table.Cell>
-                                <Form.Field required>
-                                    <label htmlFor="fname">Function Id 1</label>
+                                <Form.Field>
+                                    <label htmlFor="functionId">Function Id</label>
                                     <input type="text"
-                                        name="fname"
+                                        name="functionId"
                                         onChange={this.onChange}
-                                        value={this.state.fname}
+                                        value={this.state.functionId}
                                         placeholder="Give function ID" />
                                 </Form.Field>
                             </Table.Cell>

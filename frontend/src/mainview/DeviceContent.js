@@ -22,6 +22,7 @@ class DeviceContent extends React.Component {
 	}
 
 	handleClick = (panelProps) => event => {
+//		console.log("OnClick "+this.state.activeIndex)
 		event.preventDefault();
 		var index = panelProps.index;
 		var parentId = panelProps.parentId;
