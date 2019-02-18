@@ -1,19 +1,18 @@
 const express = require("express");
 
-const SmartHomeUser = require('./smaUser');
 const SmartHomeHome = require('./smaHome');
 const SmartHomeRoom = require('./smaRoom');
 const SmartHomeDevice = require('./smaDevice');
 const SmartHomeFunction = require('./smaFunction');
-// npm install node-fetch --save
-const fetch = require('node-fetch');
+const SmartHomeProxy = require('./smaProxy');
+
 var cors = require('cors')
 
-var smaUser = new SmartHomeUser();
 var smaHome = new SmartHomeHome();
 var smaRoom = new SmartHomeRoom();
 var smaDevice = new SmartHomeDevice();
 var smaFunction = new SmartHomeFunction();
+var smaProxy = new SmartHomeProxy();
 
 let router = express.Router();
 
@@ -59,7 +58,6 @@ router.put("/device/:id", smaDevice.ReplaceOne.bind(smaDevice));
 // Delete a Device
 router.delete("/device/:id", smaDevice.Delete.bind(smaDevice));
 
-
 // Get children of a Device, i.e. Functions of that Device
 router.get("/functions/:id", smaDevice.GetChildren.bind(smaDevice));
 // Delete children of a Device, i.e. Functions on that Device
@@ -74,57 +72,12 @@ router.put("/function/:id", smaFunction.ReplaceOne.bind(smaFunction));
 
 const { URLSearchParams } = require('url');
 
+// Proxy API
+router.post("/proxy/test", smaProxy.testConnection.bind(smaProxy));
 
-router.post("/proxy/test", function (req, res) {
-    fetch(smaHome.ProxyUrl(req.body) + "/rest/uuid", { method: 'GET', timeout: 2000 }) // headers: { "Accept":"application/json"}
-        .then((respo) => {
-            if (respo.ok) {
-                var r = respo;
-                respo.text().then((data) => {
-                    let x = r;
-                    return res.status(200).json(data);
-                }).catch((err) => {
-                    return res.status(500).json({ "message": "oh shit" });         
-                })
-            }
-            else {
-                return res.status(respo.status).json({ "message": respo.statusText}); 
-            }
-        }).catch((err) => {
-            return res.status(404).json({ "message": "item not found" });
-        })
-})
+// :all*? means that 'all' is an optional parameter
+router.get("/proxy/devFunctypes/:all*?", smaProxy.getFunctionTypes.bind(smaProxy));
 
-
-router.get("/proxy/devFunctypes/:all*?", function(req,res) {  // :all*? means that 'all' is an optional parameter
-    const endind = (req.params.all == "all" || req.params.all == 1 ) ? legalTypes.length : readWriteTypes;
-    let ret = []
-    for(let i = 0; i < endind; i++) {
-        ret.push(legalTypes[i]);
-    }
-    return res.status(200).json(ret);
-})
-
-router.get("/proxy/devFuncs/:homeid", function (req, res) {
-    smaHome.model.findById(req.params.homeid, function (err, home) {
-        if (err || !home) {
-            return res.status(404).json({ "message": "home not found" });
-        }
-        fetch(smaHome.ProxyUrl(home.proxySettings) + "/rest/items", { method: 'GET' })
-            .then((resp) => {
-                if (resp.ok) {
-                    resp.json().then((data) => {
-                        let parsed = smaDevice.parseFuncData(data);
-                        return res.status(200).json(parsed);
-                    })
-                }
-                else {
-                    return res.status(resp.status).json({ "message": resp.statusText}); 
-                }
-            }).catch((err) => {
-                return res.status(404).json({ "message": "items not found" });
-            })
-    })
-})
+router.get("/proxy/devFuncs/:homeid", smaProxy.getFunctions.bind(smaProxy));
 
 module.exports = router;
