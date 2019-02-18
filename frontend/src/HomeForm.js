@@ -107,17 +107,18 @@ class HomeForm extends React.Component {
 							<input type="password" name="servicePassword" value={this.state.servicePassword}
 								onChange={this.onChange} placeholder="Password for smart home service" required />
 						</Form.Field>
-						<Grid columns={ this.props.homeExists ? '1' : '2' }><Grid.Row>
-							<Grid.Column>
-								<Button name={this.props.homeExists ? "update" : "create"} onClick={this.submit}
-									>{this.props.home ? "Update" : "Create"}</Button>
-							</Grid.Column>
-							{ !this.props.homeExists && 
-							<Grid.Column>
-								<Checkbox label="Test service settings" name="testServiceSettings"
-									checked={this.state.testServiceSettings} onClick={this.onChange} />
-							</Grid.Column> }
-						</Grid.Row></Grid>
+						<Grid columns="2">
+							<Grid.Row>
+								<Grid.Column>
+									<Button name={this.props.homeExists ? "update" : "create"}
+										onClick={this.submit}>{this.props.homeExists ? "Update" : "Create"}</Button>
+								</Grid.Column>
+								<Grid.Column>
+									<Checkbox label="Test service settings" name="testServiceSettings"
+										checked={this.state.testServiceSettings} onClick={this.onChange} />
+								</Grid.Column>
+							</Grid.Row>
+						</Grid>
 					</Form>
 				</div>
 			</div>
