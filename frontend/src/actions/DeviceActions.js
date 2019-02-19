@@ -87,11 +87,11 @@ export const addDevice = (ditem, fitem, fitem2) => {
             if (response.ok) {
                 response.json().then((data) => {
                     dispatch(addDeviceSuccess());
-                    if (fitem.functionid !== null && fitem.functionid !== "") {
+                    if (fitem.functionid !== null && fitem.functionid !== ""  && fitem.functionid!== undefined) {
                         fitem.parentid = data.id;
                         dispatch(addFunction(fitem));
                     }
-                    if (fitem2.functionid !== null && fitem2.functionid !== "") {
+                    if (fitem2.functionid !== null && fitem2.functionid !== "" && fitem2.functionid!== undefined) {
                         fitem2.parentid = data.id;
                         dispatch(addFunction(fitem2));
                     }
@@ -179,11 +179,11 @@ export const modifyDevice = (item, id, fitem, fitem2) => {
                 response.json().then((data) => {
                     dispatch(deleteFunctions(id)); //Delete existing functions
                     dispatch(modifyDeviceSuccess()); //Modify device
-                    if (fitem.functionid !== null && fitem.functionid !== "") { //Add functions
+                    if (fitem.functionid !== null && fitem.functionid !== "" && fitem.functionid!== undefined) { //Add functions
                         fitem.parentid = data._id;
                         dispatch(addFunction(fitem));
                     }
-                    if (fitem2.functionid !== null && fitem2.functionid !== "") {
+                    if (fitem2.functionid !== null && fitem2.functionid !== "" && fitem2.functionid!== undefined) {
                         fitem2.parentid = data._id;
                         dispatch(addFunction(fitem2));
                     }

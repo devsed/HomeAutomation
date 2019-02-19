@@ -19,6 +19,9 @@ class DeviceContent extends React.Component {
 
 	getContent = (parentId) => {
 		this.props.dispatch(getDevices(parentId));
+//		console.log("getContent "+this.state.activeIndex)
+		this.setState({activeIndex:-1});
+//		console.log("getContent "+this.state.activeIndex)
 	}
 
 	handleClick = (panelProps) => event => {
@@ -28,6 +31,7 @@ class DeviceContent extends React.Component {
 		var parentId = panelProps.parentId;
 
 		if (index !== undefined) {
+//			console.log("undefined "+this.state.activeIndex)
 			var activeIndex  = this.state.activeIndex;
 			var newIndex = activeIndex === index ? -1 : index;
 			this.setState({ activeIndex: newIndex });
