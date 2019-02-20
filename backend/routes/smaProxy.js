@@ -1,13 +1,16 @@
-const smaHome = require('./smaHome');
-const fetch = require('node-fetch');
 const request = require('request');
+const homeModel = require('../models/home');
+
+const legalTypes = ["Switch", "Dimmer", "Number", "String", "DateTime"]  // "Color"
+const readWriteTypes = 2;
 
 class SmartHomeProxy {
 
 	constructor() {
 		this.getProxyUrl = this.getProxyUrl.bind(this);
+		this.parseFuncData = this.parseFuncData.bind(this);
 	  }
-
+	  
     getProxyUrl(settings) {
         var plen = 0;
         if (settings.user === "" && settings.password === "") {
@@ -23,13 +26,31 @@ class SmartHomeProxy {
         return protocol + user + ":" + encodeURI(settings.password) + "@" + encodeURI(url);
 	}
 
+	parseFuncData(data) {
+        let ret = [];
+        data.forEach(element => {
+            let ind = legalTypes.indexOf(element.type);
+            if (ind > -1) {
+                var cell = {
+                    "state": element.state,
+                    "type": element.type,
+                    "name": element.name,
+                    "label": element.label,
+                    "controllable": (ind < readWriteTypes)
+                }
+                ret.push(cell);
+            }
+        });
+        return ret;
+    }
+
 	testConnection(req, res, notifyWith) { // headers: { "Accept":"application/json"}
 		var testWithHome = typeof notifyWith === "function" && notifyWith.name !== "next";
 		
 		request.get(this.getProxyUrl(req.body) + "/rest/uuid", { timeout: 2000 }, function(err, resp, body) {
 			if (!err) {
 				if (resp.statusCode == 200) {
-					return testWithHome ? notifyWith(null) : res.status(resp.statusCode).json(body);
+					return testWithHome ? notifyWith(null) : res.status(200).json(body);
 				} else {
 					return testWithHome ? notifyWith("err") :
 						res.status(resp.statusCode).json({ "message": resp.statusMessage });
@@ -51,23 +72,24 @@ class SmartHomeProxy {
 	}
 
 	getFunctions(req, res) {
-		smaHome.model.findById(req.params.homeid, function (err, home) {
+		var self = this;
+		homeModel.findById(req.params.homeid, function (err, home) {
 			if (err || !home) {
 				return res.status(404).json({ "message": "home not found" });
 			}
-			fetch(this.getProxyUrl(home.proxySettings) + "/rest/items", { method: 'GET' }).then((resp) => {
-				if (resp.ok) {
-					resp.json().then((data) => {
-						let parsed = smaDevice.parseFuncData(data);
+
+			request.get(self.getProxyUrl(home.proxySettings) + "/rest/items", function(err, resp, body) {
+				if (!err) {
+					if (resp.statusCode == 200) {
+						let parsed = self.parseFuncData(JSON.parse(body));
 						return res.status(200).json(parsed);
-					})
+					} else {
+						return res.status(resp.statusCode).json({ "message": resp.statusMessage });
+					}
+				} else {
+					return res.status(404).json({ "message": "items not found" });
 				}
-				else {
-					return res.status(resp.status).json({ "message": resp.statusText}); 
-				}
-			}).catch((err) => {
-				return res.status(404).json({ "message": "items not found" });
-			})
+			});
 		})
 	}
 }
