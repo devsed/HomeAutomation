@@ -100,7 +100,8 @@ const loginReducer = (state = initialState, action) => {
 			
         case LOGOUT_SUCCESS:
             tempState = {
-                isLogged: false,
+				isLogged: false,
+				homeExists: false,
                 loading: false,
                 error: ""
             }

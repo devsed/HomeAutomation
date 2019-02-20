@@ -20,7 +20,7 @@ class HomeForm extends React.Component {
 			serviceAddress: this.props.homeExists ? this.props.home.proxySettings.addr : "",
 			serviceUsername: this.props.homeExists ? this.props.home.proxySettings.user : "",
 			servicePassword: this.props.homeExists ? this.props.home.proxySettings.password : "",
-			testServiceSettings: true
+			testServiceSettings: this.props.homeExists ? this.props.home.proxySettings.areTested : false
 		}
 	}
 

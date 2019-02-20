@@ -49,7 +49,7 @@ export const login = (user) => {
 					let homeExists = false;
 					if (data.userHomeId.length > 0) {
 						homeExists = true;
-						dispatch(getHome(data.userHomeId, true));
+						dispatch(getHome(data.userHomeId));
 					}
 					dispatch(loginSuccess(homeExists));
                 }).catch((error) => {
