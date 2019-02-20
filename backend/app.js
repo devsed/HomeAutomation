@@ -36,12 +36,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.serializeUser(function(user,done) {
-	console.log("serializeUser:"+user.username);
 	done(null,user._id);
 });
 
 passport.deserializeUser(function(id,done) {
-	console.log("deserializeUser");
 	userModel.findById(id,function(err, user) {
 		if(err) {
 			return done(err);
