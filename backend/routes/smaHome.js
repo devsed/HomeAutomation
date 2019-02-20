@@ -18,7 +18,7 @@ class SmartHomeHome extends SmartHomeRoot {
 	}
 
 	deleteHome(homeId) {
-		houseModel.deleteOne({"_id": homeId});
+		homeModel.deleteOne({"_id": homeId});
 	}
 
 	saveHome(req, res, next) {
