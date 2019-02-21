@@ -7,9 +7,7 @@ import {
     DELETE_FUNCTION_FAILED,
     DELETE_FUNCTION_SUCCESS,
     MODIFY_FUNCTION_FAILED,
-    MODIFY_FUNCTION_SUCCESS,
-    GET_HOME_FUNCTIONS_SUCCESS,
-    GET_HOME_FUNCTIONS_FAILED
+    MODIFY_FUNCTION_SUCCESS
 } from '../actions/FunctionActions'
 
 function getInitialState() {
@@ -18,19 +16,16 @@ function getInitialState() {
     if (sessionStorage.getItem("function_error")) {
         error = sessionStorage.getItem("function_error");
     }
-    let hflist=[]
     return {
         functionlist: list,
         error: error,
-        loading: false,
-        homefunctionlist:hflist
+        loading: false
     }
 }
 
-function saveToStorage(list, error, hflist) {
+function saveToStorage(list, error) {
     sessionStorage.setItem("list", list);
     sessionStorage.setItem("function_error", error);
-    sessionStorage.setItem("hflist", hflist);
 }
 
 let initialState = getInitialState();
@@ -39,22 +34,7 @@ const functionReducer = (state = initialState, action) => {
     //console.log("FunctionReducer - action:" + action.type)
     let tempState = {};
     switch (action.type) {
-        case GET_HOME_FUNCTIONS_SUCCESS:
-            tempState = {
-                homefunctionlist: action.list,
-                error: "",
-                loading: false
-            }
-            saveToStorage("","",action.list);
-            return tempState;
-        case GET_HOME_FUNCTIONS_FAILED:
-            tempState = {
-                ...state,
-                error: action.error,
-                loading: false
-            }
-            saveToStorage(state.list, action.error);
-            return tempState;
+
         case GET_FUNCTIONS_SUCCESS:
             tempState = {
                 functionlist: action.list,
@@ -63,6 +43,7 @@ const functionReducer = (state = initialState, action) => {
             }
             saveToStorage(action.list, "");
             return tempState;
+
         case GET_FUNCTIONS_FAILED:
             tempState = {
                 ...state,
@@ -71,14 +52,13 @@ const functionReducer = (state = initialState, action) => {
             }
             saveToStorage(state.list, action.error);
             return tempState;
+
         case FUNCTIONS_LOADING:
             tempState = {
                 ...state,
                 loading: true
             }
             return tempState;
-        default:
-            return state;
 
         case ADD_FUNCTION_SUCCESS:
             tempState = {
@@ -131,6 +111,9 @@ const functionReducer = (state = initialState, action) => {
             }
             saveToStorage(state.list, action.error);
             return tempState;
+
+        default:
+            return state;
 
     }
 }

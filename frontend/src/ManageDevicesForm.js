@@ -107,7 +107,10 @@ class ManageDevicesForm extends React.Component {
     showAddView = () => {
         this.setState({
             addViewVisible: true,
-            name: "", type: ""
+            name: "",
+            type: "",
+            functionId: "",
+            functionId2: ""
         })
     }
 
@@ -121,13 +124,13 @@ class ManageDevicesForm extends React.Component {
         }
         let fitem = {
             "functionid": this.state.functionId,
-            "type":1
+            "type": 1
         }
         let fitem2 = {
             "functionid": this.state.functionId2,
-            "type":2
+            "type": 2
         }
-        if (this.state.name.length === 0 || this.state.type < 1) {
+        if (this.state.name.length === 0 || this.state.type < 1 || this.state.functionId.length === 0) {
             alert("Required fields missing")
             return;
         }
@@ -147,13 +150,13 @@ class ManageDevicesForm extends React.Component {
         }
         let fitem = {
             "functionid": this.state.functionId,
-            "type":1
+            "type": 1
         }
         let fitem2 = {
             "functionid": this.state.functionId2,
-            "type":2
+            "type": 2
         }
-        if (this.state.name.length === 0 || this.state.type < 1) {
+        if (this.state.name.length === 0 || this.state.type < 1 || this.state.functionId.length === 0) {
             alert("Required fields missing")
             return;
         }

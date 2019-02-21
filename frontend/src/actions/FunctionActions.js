@@ -7,51 +7,6 @@ export const DELETE_FUNCTION_SUCCESS = "DELETE_FUNCTION_SUCCESS";
 export const DELETE_FUNCTION_FAILED = "DELETE_FUNCTION_FAILED";
 export const MODIFY_FUNCTION_SUCCESS = "MODIFY_FUNCTION_SUCCESS";
 export const MODIFY_FUNCTION_FAILED = "MODIFY_FUNCTION_FAILED";
-export const GET_HOME_FUNCTIONS_SUCCESS = "GET_HOME_FUNCTIONS_SUCCESS";
-export const GET_HOME_FUNCTIONS_FAILED = "GET_HOME_FUNCTIONS_FAILED";
-
-export const getHomeFunctions = (parent_id) => {
-    return dispatch => {
-        let getObject = {
-            method: "GET",
-            mode: "cors",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        }
-        dispatch(functionsLoading());
-        fetch("/api/proxy/devFuncs/" + parent_id, getObject).then((response) => {
-            console.log("devFuncsissa")
-            if (response.ok) {
-                response.json().then((data) => {
-                    console.log("devFuncs:" + data)
-                    dispatch(getHomeFunctionsSuccess(data));
-                }).catch((error) => {
-                    dispatch(getHomeFunctionsFailed("Problem loading list"));
-                })
-            } else {
-                dispatch(getHomeFunctionsFailed("Response not ok. Status:" + response.status));
-            }
-        }).catch((error) => {
-            dispatch(getHomeFunctionsFailed("Problem loading list"));
-        });
-    }
-}
-
-const getHomeFunctionsSuccess = (list) => {
-    return {
-        type: GET_HOME_FUNCTIONS_SUCCESS,
-        list: list
-    }
-}
-
-const getHomeFunctionsFailed = (error) => {
-    return {
-        type: GET_HOME_FUNCTIONS_FAILED,
-        error: error
-    }
-}
 
 export const getFunctions = (parent_id) => {
     return dispatch => {

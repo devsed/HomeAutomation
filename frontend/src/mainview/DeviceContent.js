@@ -7,8 +7,8 @@ import FunctionContent from './FunctionContent';
 class DeviceContent extends React.Component {
 
 	constructor(props) {
-        super(props);
-        this.state = {
+		super(props);
+		this.state = {
 			activeIndex: -1
 		}
 	}
@@ -19,28 +19,29 @@ class DeviceContent extends React.Component {
 
 	getContent = (parentId) => {
 		this.props.dispatch(getDevices(parentId));
-//		console.log("getContent "+this.state.activeIndex)
-		this.setState({activeIndex:-1});
-//		console.log("getContent "+this.state.activeIndex)
+		this.setState({ activeIndex: -1 });
+		//console.log("getContent");
 	}
 
 	handleClick = (panelProps) => event => {
-//		console.log("OnClick "+this.state.activeIndex)
+		//		console.log("OnClick activeIndex:" + this.state.activeIndex+ "index:"+panelProps.index)
 		event.preventDefault();
 		var index = panelProps.index;
 		var parentId = panelProps.parentId;
 
+		//console.log("OnClick undefinedA " + this.state.activeIndex)
 		if (index !== undefined) {
-//			console.log("undefined "+this.state.activeIndex)
-			var activeIndex  = this.state.activeIndex;
+			var activeIndex = this.state.activeIndex;
 			var newIndex = activeIndex === index ? -1 : index;
 			this.setState({ activeIndex: newIndex });
+			//console.log("OnClick undefinedB " + this.state.activeIndex + " " + newIndex)
 			this.launchChild(parentId);
 		}
 	}
 
 	render() {
 		var activeIndexNow = this.state.activeIndex;
+		//console.log("Render" + this.state.activeIndex)
 
 		return (
 			<Accordion.Accordion panels={
@@ -48,8 +49,10 @@ class DeviceContent extends React.Component {
 					return {
 						key: device._id,
 						title: device.name,
-						content: { content: <FunctionContent
-							setLaunch={launch => this.launchChild = launch} /> },
+						content: {
+							content: <FunctionContent
+								setLaunch={launch => this.launchChild = launch} />
+						},
 						onTitleClick: this.handleClick({ index: idx, parentId: device._id })
 					}
 				})

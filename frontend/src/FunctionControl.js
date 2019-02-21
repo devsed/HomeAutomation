@@ -2,6 +2,19 @@ import React, { Component } from 'react'
 import { Checkbox, Segment } from 'semantic-ui-react'
 
 export default class FunctionControl extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      sliderValue: 0,
+      checkValue: false
+    }
+  }
+
+  componentDidMount() {
+    //console.log("FunctionState:"+this.props.functionState)
+  }
+
   state = {
     sliderValue: 0,
     checkValue: false
