@@ -40,7 +40,10 @@ export default class FunctionControl extends Component {
 
     return (
       this.props.functio.type === 1 ?
-        (<Checkbox toggle onChange={this.handleCheckboxValue} checked={this.state.checkValue} />) :
+        (<div>
+          <Checkbox toggle onChange={this.handleCheckboxValue} checked={this.state.checkValue} />
+          <div>{this.props.functio.state}</div>
+        </div>) :
         (<Segment secondary>
           <div>Brightness: {sliderValue}</div>
           <input

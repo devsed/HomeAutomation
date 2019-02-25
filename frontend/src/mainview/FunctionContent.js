@@ -9,6 +9,10 @@ var functionsAndStatuses = [];
 
 class FunctionContent extends React.Component {
 
+	state = {
+		functionStatusesCalled: false
+	}
+
 	componentDidMount() {
 		this.props.setLaunch(this.getContent.bind(this));
 	}
@@ -21,6 +25,10 @@ class FunctionContent extends React.Component {
 	}
 
 	findFunctionStatuses = () => {
+		console.log("findFunctionStatuses-functionCount: " +
+			this.props.functions.length +
+			" homeFunctionCount: " + this.props.homeFunctions.length);
+		this.setState({ functionStatusesCalled: false });
 		functionsAndStatuses = this.props.functions.map((functio) => {
 			return {
 				...functio, state: ""
@@ -39,8 +47,11 @@ class FunctionContent extends React.Component {
 	}
 
 	render() {
-		let items = this.props.functions.map((functio, idx, array) => {
-			if (functionsAndStatuses[idx] !== undefined) console.log("state:" + functionsAndStatuses[idx].state)
+		let items = functionsAndStatuses.map((functio, idx, array) => {
+			console.log("render-functionCount: " +
+			this.props.functions.length +
+			" homeFunctionCount: " + this.props.homeFunctions.length);
+			if (functionsAndStatuses[idx] !== undefined) console.log("state:" + functionsAndStatuses[idx].state);
 			return (
 				<span key={idx}>
 					<Grid.Row>

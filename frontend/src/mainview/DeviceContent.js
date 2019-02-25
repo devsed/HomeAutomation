@@ -34,7 +34,7 @@ class DeviceContent extends React.Component {
 			var activeIndex = this.state.activeIndex;
 			var newIndex = activeIndex === index ? -1 : index;
 			this.setState({ activeIndex: newIndex });
-			//console.log("OnClick undefinedB " + this.state.activeIndex + " " + newIndex)
+			console.log("OnClick undefinedB " + this.state.activeIndex + " " + newIndex + "parentId: " + parentId)
 			this.launchChild(parentId);
 		}
 	}
