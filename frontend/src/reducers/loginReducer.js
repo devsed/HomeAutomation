@@ -44,7 +44,7 @@ function getInitialState() {
 function saveToStorage(isLogged, homeExists, error) {
 	sessionStorage.setItem("isLogged", isLogged);
 	sessionStorage.setItem("homeExists", homeExists);
-    sessionStorage.setItem("error", "");
+    sessionStorage.setItem("error", error);
 }
 
 let initialState = getInitialState();
@@ -76,7 +76,7 @@ const loginReducer = (state = initialState, action) => {
                 error: action.error,
                 loading: false
             }
-            saveToStorage(state.isLogged, action.error);
+            saveToStorage(state.isLogged, state.homeExists, action.error);
 			return tempState;
 			
         case LOGIN_SUCCESS:
@@ -100,7 +100,8 @@ const loginReducer = (state = initialState, action) => {
 			
         case LOGOUT_SUCCESS:
             tempState = {
-                isLogged: false,
+				isLogged: false,
+				homeExists: false,
                 loading: false,
                 error: ""
             }

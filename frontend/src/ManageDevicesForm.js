@@ -1,28 +1,26 @@
 import React from 'react';
 import { Table, Form, Button, Select } from 'semantic-ui-react';
 import { connect } from 'react-redux';
-import { addRoom, deleteRoom, modifyRoom } from './actions/RoomActions';
 import { withRouter } from "react-router-dom";
+import { getDevices, addDevice, deleteDevice, modifyDevice } from './actions/DeviceActions';
 
-const roomOptions = [
-    { text: 'Kitchen', value: 1 },
-    { text: 'Livingroom', value: 2 },
-    { text: 'Bedroom', value: 3 },
-    { text: 'Bathroom', value: 4 },
-    { text: 'Workroom', value: 5 },
-    { text: 'Laundry room', value: 6 }
+const deviceOptions = [
+    { text: 'Switch', value: 1 },
+    { text: 'Dimmer', value: 2 },
+    { text: 'Heating', value: 3 },
+    { text: 'Camera', value: 4 }
 ];
 
-function getRoomName(type) {
+function getDeviceName(type) {
     let text = null;
-    roomOptions.some(function (option) {
+    deviceOptions.some(function (option) {
         text = option.text;
-        return type === option.value ? option.text : null;
+        return type === option.value && option.text;
     });
     return text;
 }
 
-class ManageRoomsForm extends React.Component {
+class ManageDevicesForm extends React.Component {
 
     constructor(props) {
         super(props);
@@ -32,14 +30,44 @@ class ManageRoomsForm extends React.Component {
             parentid: "",
             addViewVisible: false,
             editViewVisible: false,
+            functionRows: false,
+            functionId: "",
+            functionId2: ""
         }
-        this.currentHomeName = this.props.location.state.homeName;
+        this.currentRoomId = this.props.location.state.roomId;
+        this.currentRoomName = this.props.location.state.roomName;
     }
 
-    componentDidMount() {
-        if (this.props.isLogged) {
+    componentDidMount = () => {
+        this.props.dispatch(getDevices(this.currentRoomId));
+    }
 
+    getItemsSyncronous = (parent_id, itemType) => {
+        let getObject = {
+            method: "GET",
+            mode: "cors",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            }
         }
+
+        const request = async () => {
+            const response = await fetch("/api/" + itemType + "/" + parent_id, getObject);
+            let json = await response.json();
+            console.log(json);
+            let functionIds = [];
+            if (json.length > 0) {
+                json.map((item, idx) => {
+                    return functionIds[idx] = item.functionid;
+                })
+            }
+            this.setState({
+                functionId: functionIds[0],
+                functionId2: functionIds[1]
+            });
+        }
+        request();
     }
 
     delete_check = (item) => {
@@ -51,16 +79,8 @@ class ManageRoomsForm extends React.Component {
     }
 
     delete = (item) => {
-        let homeItem = this.props.home;
-        let homeId = "";
-        // Edit home changes index property name
-        if (homeItem.hasOwnProperty('_id')) {
-            homeId = homeItem._id;
-        }
-        else homeId = homeItem.id;
-
-        //Home-id because roomlist update needs it
-        this.props.dispatch(deleteRoom(item._id, homeId))
+        //Room-id because devicelist update needs it
+        this.props.dispatch(deleteDevice(item._id, this.currentRoomId))
     }
 
     showEditView = (event, data) => {
@@ -68,52 +88,59 @@ class ManageRoomsForm extends React.Component {
             alert("Cancel Add first");
             return;
         }
+        //this.props.dispatch(getFunctions(data._id));
+        this.setState({
+            functionId: "",
+            functionId2: ""
+        })
+        this.getItemsSyncronous(data._id, "functions");
+
         this.setState({
             editViewVisible: true,
             name: data.name,
             type: data.type,
-            _id: data._id
+            _id: data._id,
+            functionRows: data.type === 2 ? true : false
         });
     }
 
     showAddView = () => {
         this.setState({
             addViewVisible: true,
-            name: "", type: ""
+            name: "",
+            type: "",
+            functionId: "",
+            functionId2: ""
         })
     }
 
     submit = (event) => {
         event.preventDefault();
-        let homeItem = this.props.home;
-        let parentid = "";
-        // Edit home changes index property name
-        if (homeItem.hasOwnProperty('_id')) {
-            parentid = homeItem._id;
-        }
-        else parentid = homeItem.id;
-        let item = {
+        let parentid = this.currentRoomId;
+        let ditem = {
             "type": this.state.type,
             "name": this.state.name,
-            "parentid": parentid
+            "parentid": parentid,
         }
-        if (this.state.name.length === 0 || this.state.type < 1) {
+        let fitem = {
+            "functionid": this.state.functionId,
+            "type": 1
+        }
+        let fitem2 = {
+            "functionid": this.state.functionId2,
+            "type": 2
+        }
+        if (this.state.name.length === 0 || this.state.type < 1 || this.state.functionId.length === 0) {
             alert("Required fields missing")
             return;
         }
-        this.props.dispatch(addRoom(item));
-        this.setState({ addViewVisible: false })
+        this.props.dispatch(addDevice(ditem, fitem, fitem2));
+        this.setState({ addViewVisible: false, ditem: null, fitem: null, fitem2: null })
     }
 
-    update = (event, data) => {
+    update = (event) => {
         event.preventDefault();
-        let homeItem = this.props.home;
-        let parentid = "";
-        // Edit home changes index property name
-        if (homeItem.hasOwnProperty('_id')) {
-            parentid = homeItem._id;
-        }
-        else parentid = homeItem.id;
+        let parentid = this.currentRoomId;
 
         let item = {
             "type": this.state.type,
@@ -121,11 +148,19 @@ class ManageRoomsForm extends React.Component {
             "id": this.state._id,
             "parentid": parentid
         }
-        if (this.state.name.length === 0 || this.state.type < 1) {
+        let fitem = {
+            "functionid": this.state.functionId,
+            "type": 1
+        }
+        let fitem2 = {
+            "functionid": this.state.functionId2,
+            "type": 2
+        }
+        if (this.state.name.length === 0 || this.state.type < 1 || this.state.functionId.length === 0) {
             alert("Required fields missing")
             return;
         }
-        this.props.dispatch(modifyRoom(item, item.id));
+        this.props.dispatch(modifyDevice(item, item.id, fitem, fitem2));
         this.setState({
             addViewVisible: false,
             editViewVisible: false
@@ -146,17 +181,46 @@ class ManageRoomsForm extends React.Component {
         });
     }
 
+    onTypeChange = (event, data) => {
+        let state = {}
+        state[data === undefined ? event.target.functionId : data.name] =
+            data === undefined ? event.target.value : data.value;
+        this.setState(state);
+
+        if (state.type === 2) {
+            this.setState({ functionRows: true });
+        }
+        else {
+            this.setState({ functionRows: false });
+        }
+    }
+
+
     render() {
         let items = [];
 
-        items = this.props.roomlist.map((item) => {
+        let functionRow =   //Possible second function row
+            <Table.Row>
+                <Table.Cell>
+                    <Form.Field>
+                        <label htmlFor="functionId2" />
+                        <input type="text"
+                            name="functionId2"
+                            onChange={this.onChange}
+                            value={this.state.functionId2}
+                            placeholder="Give function ID" />
+                    </Form.Field>
+                </Table.Cell>
+            </Table.Row>
+
+        items = this.props.devicelist.map((item) => {
             return <Table.Row key={item._id}>
                 <Table.Cell >{item.name}</Table.Cell>
-                <Table.Cell ><aside>{getRoomName(item.type)}</aside></Table.Cell>
+                {<Table.Cell ><aside>{getDeviceName(item.type)}</aside></Table.Cell>}
                 <Table.Cell><Button
                     icon='trash'
                     onClick={() => {
-                        this.delete_check(item)
+                        this.delete_check(item);
                     }}
                     name={item._id} />
                 </Table.Cell>
@@ -176,7 +240,7 @@ class ManageRoomsForm extends React.Component {
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell
-                                colSpan='3'>{this.state.addViewVisible ? 'Add room' : 'Edit room'}
+                                colSpan='3'>{this.state.addViewVisible ? 'Add device' : 'Edit device'}
                             </Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
@@ -189,7 +253,7 @@ class ManageRoomsForm extends React.Component {
                                         name="name"
                                         onChange={this.onChange}
                                         value={this.state.name}
-                                        placeholder="Give name for room" />
+                                        placeholder="Give name for device" />
                                 </Form.Field>
                             </Table.Cell>
                             <Table.Cell />
@@ -199,14 +263,14 @@ class ManageRoomsForm extends React.Component {
                             <Table.Cell>
                                 <Form.Field
                                     control={Select}
-                                    options={roomOptions}
+                                    options={deviceOptions}
                                     name="type"
                                     label={{
                                         children: "Type",
                                         htmlFor: "type"
                                     }}
-                                    placeholder="Select room type"
-                                    onChange={this.onChange}
+                                    placeholder="Select device type"
+                                    onChange={this.onTypeChange}
                                     required
                                     value={this.state.type}>
                                 </Form.Field>
@@ -224,6 +288,19 @@ class ManageRoomsForm extends React.Component {
                                 </Form.Field>
                             </Table.Cell>
                         </Table.Row>
+                        <Table.Row>
+                            <Table.Cell>
+                                <Form.Field>
+                                    <label htmlFor="functionId">Function Id</label>
+                                    <input type="text"
+                                        name="functionId"
+                                        onChange={this.onChange}
+                                        value={this.state.functionId}
+                                        placeholder="Give function ID" />
+                                </Form.Field>
+                            </Table.Cell>
+                        </Table.Row>
+                        {this.state.functionRows === true ? <div>{functionRow}</div> : <div></div>}
                     </Table.Body>
                 </Table>
                 <br />
@@ -231,10 +308,11 @@ class ManageRoomsForm extends React.Component {
 
         let addButton = <Button onClick={this.showAddView} icon='plus' />
 
+
         return (
             <div className="ui one column stackable center aligned page grid">
                 <div className="column six wide">
-                    <h3>Manage<strong style={{ color: 'grey' }}>{' ' + this.currentHomeName + ' '}</strong> rooms</h3>
+                    <h3>Manage <strong style={{ color: 'grey' }}>{' ' + this.currentRoomName + ' '}</strong>devices</h3>
                     <Table selectable>
                         <Table.Header>
                             <Table.Row >
@@ -260,9 +338,10 @@ class ManageRoomsForm extends React.Component {
 const mapStateToProps = (state) => {
     return {
         isLogged: state.login.isLogged,
-        roomlist: state.room.roomlist,
-        home: state.home.home
+        devicelist: state.device.devicelist,
+        activeId: state.device.activeId,
+        functionlist: state.function.functionlist
     }
 }
 
-export default withRouter(connect(mapStateToProps)(ManageRoomsForm));
+export default withRouter(connect(mapStateToProps)(ManageDevicesForm));

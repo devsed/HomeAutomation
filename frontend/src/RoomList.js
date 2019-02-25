@@ -1,13 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getRooms } from './actions/RoomActions';
+import { changeActiveRoomId } from './actions/RoomActions';
 import { getHome } from './actions/HomeActions';
 import { getDevices } from './actions/DeviceActions';
 import { getFunctions } from './actions/FunctionActions';
-import { Accordion, Icon } from 'semantic-ui-react'
+import { Accordion, Button } from 'semantic-ui-react'
 import './RoomList.css';
 import { Switch, Route, Redirect } from 'react-router-dom';
-
 
 class RoomList extends React.Component {
 
@@ -17,18 +16,10 @@ class RoomList extends React.Component {
             roomActiveIndex: -1,
             deviceActiveIndex: -1,
             functionActiveIndex: -1,
-            manageRooms: false
-        }
-    }
-
-    componentDidMount() {
-        if (this.props.isLogged) {
-            let item = this.props.home;
-            console.log("item?");
-            if (item !== null) {
-                console.log("item= "+item._id);
-                this.props.dispatch(getRooms(item._id));
-            }
+            manageRooms: false,
+            editHome: false,
+            activeRoomId: "",
+            manageDevices: false
         }
     }
 
@@ -59,7 +50,7 @@ class RoomList extends React.Component {
         var active = -1;
         var i = -1;
         if (deviceProps.activeDeviceId === 'device_999') {
-            alert('Laitteen lisäys tähän')
+            this.setState({ manageDevices: true })
         } else {
             if (this.state.deviceActiveIndex > -1) {
                 this.setState({ deviceActiveIndex: -1 });
@@ -87,6 +78,7 @@ class RoomList extends React.Component {
             if (this.state.roomActiveIndex > -1) {
                 this.setState({ roomActiveIndex: -1 });
             }
+            this.setState({activeRoomId: roomProps.activeRoomId});
             this.props.dispatch(getDevices(roomProps.activeRoomId));
             for (i = 0; i < roomProps.roomIdList.length; i++) {
                 if (roomProps.activeRoomId === roomProps.roomIdList[i].roomId) {
@@ -100,13 +92,24 @@ class RoomList extends React.Component {
         }
     }
 
-    doNothing = () => { }
+    editHome = (event) => {
+        this.setState({ editHome: true });
+    }
 
     render() {
+        if (this.state.editHome) {
+            return <Redirect to='/home/editing' />
+        }
 
-        console.log("ManageRooms :"+this.state.manageRooms);
         if (this.state.manageRooms) {
+            this.setState({ manageRooms: false });
             return <Redirect to='/managerooms' />
+        }
+
+        if (this.state.manageDevices) {
+            this.setState({ manageDevices: false });
+            this.props.dispatch(changeActiveRoomId(this.state.activeRoomId));
+            return <Redirect to='/managedevices' />
         }
 
         let roomActiveIndex = this.state.roomActiveIndex;
@@ -118,7 +121,7 @@ class RoomList extends React.Component {
         //Lisätään Manage-rivi
         let objIndex = this.props.functionlist.findIndex((obj => obj._id === 'function_999'));
         if (objIndex < 0) {
-            this.props.functionlist.push({ _id: "function_999", name: 'Add Function' })
+            this.props.functionlist.push({ _id: "function_999", name: 'Manage Functions' })
         }
         let functionListIdx = -1;
         let functionIdList = [];
@@ -140,7 +143,7 @@ class RoomList extends React.Component {
         //Lisätään Manage-rivi
         objIndex = this.props.devicelist.findIndex((obj => obj._id === 'device_999'));
         if (objIndex < 0) {
-            this.props.devicelist.push({ _id: "device_999", name: 'Add Device' })
+            this.props.devicelist.push({ _id: "device_999", name: 'Manage Devices' })
         }
         let deviceListIdx = -1;
         let deviceIdList = [];
@@ -168,47 +171,48 @@ class RoomList extends React.Component {
         let roomListIdx = -1;
         let roomIdList = [];
         let roomPanels =
-            <Accordion.Accordion panels={
-                this.props.roomlist.map((room) => {
-                    roomListIdx = roomListIdx + 1;
-                    roomIdList.push({ roomListIdx: roomListIdx, roomId: room._id });
-                    return {
-                        key: room._id,
-                        title: room.name,   //title: (<div active='false'><Icon active='false' name='edit' />{room.name}</div>),
-                        content: { content: devicePanels },
-                        onTitleClick: this.getDev({ activeRoomId: room._id, roomIdList: roomIdList })
-                    }
-                })
-            }
-                activeIndex={roomActiveIndex} />
+            this.props.roomlist.map((room) => {
+                roomListIdx = roomListIdx + 1;
+                roomIdList.push({ roomListIdx: roomListIdx, roomId: room._id });
+                return {
+                    key: room._id,
+                    title: room.name,
+                    content: { content: devicePanels },
+                    onTitleClick: this.getDev({ activeRoomId: room._id, roomIdList: roomIdList })
+                }
+            })
 
-        //Home-paneli
-        let homePanel = null;
+        //Home content
+        const HomeContent = (item) => (
+            <div>
+                {item.name}<Button compact active floated='right' icon='edit' onClick={this.editHome} />
+                <Accordion.Accordion panels={roomPanels} activeIndex={roomActiveIndex} />
+            </div>
+        )
+
+        let rootPanel = null;
         let item = this.props.home;
         if (item !== null) {
-            homePanel = [
-                {
-                    key: item._id,
-                    title: (<div active='false'><Icon name='' />{item.name}</div>),
-                    content: { content: roomPanels },
-                    onTitleClick: this.doNothing() //Home-paneeli , ei ikonia, ei reagoi, aina auki
-                },]
+            rootPanel = [{
+                key: item._id,
+                content: { content: HomeContent(item) }
+            },]
         }
 
         return (
-            item !== undefined ? (<div className="ui one column stackable center aligned page grid">
-                <div className="column six wide">
-                    <Accordion panels={homePanel} defaultActiveIndex={0} styled />
-                </div>
-            </div>)
-                : (<div></div>)
+            item !== undefined ?
+                (<div className="ui one column stackable center aligned page grid">
+                    <div className="column six wide">
+                        <Accordion panels={rootPanel} styled />
+                    </div>
+                </div>)
+                : null
         )
     }
 }
 
 const mapStateToProps = (state) => {
     return {
-        isLogged: state.login.isLogged,
         roomlist: state.room.roomlist,
         home: state.home.home,
         devicelist: state.device.devicelist,

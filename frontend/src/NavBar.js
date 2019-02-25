@@ -6,13 +6,16 @@ import { connect } from 'react-redux';
 
 class NavBar extends React.Component {
 
+
+
     logout = () => {
         this.props.dispatch(logout());
     }
 
     render() {
         let navbar;
-        if (this.props.isLogged) {
+
+		if (this.props.isLogged) {
             navbar = <List horizontal>
                 <List.Item>
                     <Link name="logout"
@@ -24,11 +27,13 @@ class NavBar extends React.Component {
             </List>
         } else {
             navbar = <div style={{ height: 65 }} />
-        }
-        if (this.props.loginError.length > 0) {
+		}
+
+		if (this.props.loginError.length > 0) {
             navbar = <div style={{ height: 65 }}>
                 <p>Error:{this.props.loginError}</p></div>
-        }
+		}
+		
         return (
             <div style={{ height: 65 }}>
                 {navbar}
@@ -43,6 +48,7 @@ const mapStateToProps = (state) => {
     if(state.login.error.length>0) {
         error=state.login.error
     }
+
     return {
         isLogged: state.login.isLogged,
         loading: loading,
