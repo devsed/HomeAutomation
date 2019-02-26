@@ -8,7 +8,7 @@ export const DELETE_FUNCTION_FAILED = "DELETE_FUNCTION_FAILED";
 export const MODIFY_FUNCTION_SUCCESS = "MODIFY_FUNCTION_SUCCESS";
 export const MODIFY_FUNCTION_FAILED = "MODIFY_FUNCTION_FAILED";
 
-export const getFunctions = (parent_id) => {
+export const getFunctions = (parent_id, home_id) => {
     return dispatch => {
         let getObject = {
             method: "GET",
@@ -22,6 +22,34 @@ export const getFunctions = (parent_id) => {
         fetch("/api/functions/" + parent_id, getObject).then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
+                    dispatch(getHomeFunctions(data,home_id));
+                }).catch((error) => {
+                    dispatch(getFunctionsFailed("Problem loading list"));
+                })
+            } else {
+                dispatch(getFunctionsFailed("Response not ok. Status:" + response.status));
+            }
+        }).catch((error) => {
+            dispatch(getFunctionsFailed("Problem loading list"));
+        });
+    }
+}
+
+export const getHomeFunctions = (dataF, parent_id) => {
+    return dispatch => {
+        let getObject = {
+            method: "GET",
+            mode: "cors",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }
+        dispatch(functionsLoading());
+        fetch("/api/proxy/devFuncs/" + parent_id, getObject).then((response) => {
+            if (response.ok) {
+                response.json().then((dataH) => {
+                    let data=findFunctionStatuses(dataF,dataH);
                     dispatch(getFunctionsSuccess(data));
                 }).catch((error) => {
                     dispatch(getFunctionsFailed("Problem loading list"));
@@ -33,6 +61,24 @@ export const getFunctions = (parent_id) => {
             dispatch(getFunctionsFailed("Problem loading list"));
         });
     }
+}
+
+function findFunctionStatuses  (dataF,dataH)  {
+    let functionsAndStatuses = dataF.map((functio) => {
+        return {
+            ...functio, state: ""
+        }
+    })
+
+    let list = dataH;
+    for (let i = 0; i < functionsAndStatuses.length; i++) {
+        for (let j = 0; j < list.length; j++) {
+            if (functionsAndStatuses[i].functionid === list[j].name) {
+                functionsAndStatuses[i].state = list[j].state;
+            }
+        }
+    }
+    return functionsAndStatuses;
 }
 
 const getFunctionsSuccess = (list) => {

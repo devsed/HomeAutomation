@@ -13,15 +13,13 @@ import homeReducer from './reducers/HomeReducer';
 import roomReducer from './reducers/RoomReducer';
 import deviceReducer from './reducers/DeviceReducer';
 import functionReducer from './reducers/FunctionReducer';
-import homeFunctionReducer from './reducers/HomeFunctionReducer';
 
 let rootReducer = combineReducers({
 	login: LoginReducer,
 	home: homeReducer,
     room: roomReducer,
     device: deviceReducer,
-    function: functionReducer,
-    homeFunction: homeFunctionReducer
+    function: functionReducer
 })
 
 const store = createStore(rootReducer, applyMiddleware(thunk));

@@ -44,17 +44,20 @@ export default class FunctionControl extends Component {
           <Checkbox toggle onChange={this.handleCheckboxValue} checked={this.state.checkValue} />
           <div>{this.props.functio.state}</div>
         </div>) :
-        (<Segment secondary>
-          <div>Brightness: {sliderValue}</div>
-          <input
-            type='range'
-            min='0'
-            max='10'
-            value={sliderValue}
-            onChange={this.handleSliderChange}
-            onMouseUp={this.handleSliderLeave}
-          />
-        </Segment>)
+        (<div>
+          <Segment secondary>
+            <div>Brightness: {sliderValue}</div>
+            <input
+              type='range'
+              min='0'
+              max='10'
+              value={sliderValue}
+              onChange={this.handleSliderChange}
+              onMouseUp={this.handleSliderLeave}
+            />
+          </Segment>
+          <div>{this.props.functio.state}</div>
+        </div>)
     )
   }
 }

@@ -20,28 +20,23 @@ class DeviceContent extends React.Component {
 	getContent = (parentId) => {
 		this.props.dispatch(getDevices(parentId));
 		this.setState({ activeIndex: -1 });
-		//console.log("getContent");
 	}
 
 	handleClick = (panelProps) => event => {
-		//		console.log("OnClick activeIndex:" + this.state.activeIndex+ "index:"+panelProps.index)
 		event.preventDefault();
 		var index = panelProps.index;
 		var parentId = panelProps.parentId;
 
-		//console.log("OnClick undefinedA " + this.state.activeIndex)
 		if (index !== undefined) {
 			var activeIndex = this.state.activeIndex;
 			var newIndex = activeIndex === index ? -1 : index;
 			this.setState({ activeIndex: newIndex });
-			console.log("OnClick undefinedB " + this.state.activeIndex + " " + newIndex + "parentId: " + parentId)
 			this.launchChild(parentId);
 		}
 	}
 
 	render() {
-		var activeIndexNow = this.state.activeIndex;
-		//console.log("Render" + this.state.activeIndex)
+		let activeIndexNow = this.state.activeIndex;
 
 		return (
 			<Accordion.Accordion panels={
